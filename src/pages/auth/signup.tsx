@@ -308,8 +308,11 @@ const SignupPage = () => {
       
       console.log('Signup success:', response.data);
       
-      // 성공 시 프로필 설정 페이지로 이동
-      navigate('/profile-setup');
+      // memberId 추출
+      const memberId = response.data.result;
+      
+      // 성공 시 프로필 설정 페이지로 이동 (memberId와 함께)
+      navigate('/profile-setup', { state: { memberId } });
       
     } catch (error: any) {
       console.error('Signup error:', error);

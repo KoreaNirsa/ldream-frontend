@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,9 @@ import axios from 'axios';
 
 const ProfileSetupPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const memberId = location.state?.memberId;
+  
   const [showSkipMessage, setShowSkipMessage] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -194,12 +197,22 @@ const ProfileSetupPage = () => {
   };
 
   const handleComplete = async () => {
+    if (!memberId) {
+      setApiError('회원 정보를 찾을 수 없습니다. 회원가입을 다시 진행해주세요.');
+      return;
+    }
+    
     setIsLoading(true);
     setApiError('');
     
     try {
-      // 프로필 데이터를 서버로 전송
-      const response = await axios.post('http://localhost:8080/api/member/profile', formData, {
+      // 프로필 데이터를 서버로 전송 (memberId 포함)
+      const profileData = {
+        memberId: memberId,
+        ...formData
+      };
+      
+      const response = await axios.post('http://localhost:8080/api/member/profile', profileData, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -226,6 +239,30 @@ const ProfileSetupPage = () => {
       setIsLoading(false);
     }
   };
+
+  // memberId가 없으면 회원가입 페이지로 리다이렉트
+  if (!memberId) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center p-4">
+        <Card className="shadow-lg max-w-md w-full">
+          <CardContent className="text-center py-8">
+            <Heart className="h-12 w-12 text-pink-600 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">접근 오류</h2>
+            <p className="text-gray-600 mb-6">
+              회원 정보를 찾을 수 없습니다.<br />
+              회원가입을 다시 진행해주세요.
+            </p>
+            <Button 
+              onClick={() => navigate('/signup')}
+              className="bg-pink-600 hover:bg-pink-700"
+            >
+              회원가입으로 돌아가기
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (showSkipMessage) {
     return (
