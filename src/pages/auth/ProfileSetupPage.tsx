@@ -8,16 +8,18 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Heart, Calendar, MapPin, Coffee, Music, Camera, Book, Gamepad, Utensils } from 'lucide-react';
+import axios from 'axios';
 
 const ProfileSetupPage = () => {
   const navigate = useNavigate();
   const [showSkipMessage, setShowSkipMessage] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
   
   const [formData, setFormData] = useState({
     mbti: '',
     interests: [] as string[],
-    datePreferences: [] as string[],
     preferredDays: [] as string[],
     preferredLocation: '',
     preferredTime: '',
@@ -36,34 +38,21 @@ const ProfileSetupPage = () => {
   ];
 
   const interests = [
-    { id: 'coffee', label: '카페', icon: Coffee },
-    { id: 'music', label: '음악', icon: Music },
-    { id: 'camera', label: '사진', icon: Camera },
-    { id: 'book', label: '독서', icon: Book },
-    { id: 'game', label: '게임', icon: Gamepad },
-    { id: 'food', label: '맛집', icon: Utensils },
-    { id: 'travel', label: '여행', icon: MapPin },
-    { id: 'movie', label: '영화', icon: Calendar },
-    { id: 'sports', label: '운동', icon: Calendar },
-    { id: 'art', label: '예술', icon: Calendar },
-    { id: 'cooking', label: '요리', icon: Calendar },
-    { id: 'camping', label: '캠핑', icon: Calendar }
+    { id: '카페', label: '카페', icon: Coffee },
+    { id: '음악', label: '음악', icon: Music },
+    { id: '사진', label: '사진', icon: Camera },
+    { id: '독서', label: '독서', icon: Book },
+    { id: '게임', label: '게임', icon: Gamepad },
+    { id: '맛집', label: '맛집', icon: Utensils },
+    { id: '여행', label: '여행', icon: MapPin },
+    { id: '영화', label: '영화', icon: Calendar },
+    { id: '운동', label: '운동', icon: Calendar },
+    { id: '예술', label: '예술', icon: Calendar },
+    { id: '요리', label: '요리', icon: Calendar },
+    { id: '캠핑', label: '캠핑', icon: Calendar }
   ];
 
-  const datePreferences = [
-    '카페 데이트',
-    '영화 데이트',
-    '맛집 탐방',
-    '산책',
-    '문화생활',
-    '액티비티',
-    '집에서 데이트',
-    '드라이브',
-    '쇼핑',
-    '운동',
-    '여행',
-    '게임'
-  ];
+
 
   const preferredDays = [
     '월요일',
@@ -157,14 +146,7 @@ const ProfileSetupPage = () => {
     }));
   };
 
-  const handlePreferenceToggle = (preference: string) => {
-    setFormData(prev => ({
-      ...prev,
-      datePreferences: prev.datePreferences.includes(preference)
-        ? prev.datePreferences.filter(p => p !== preference)
-        : [...prev.datePreferences, preference]
-    }));
-  };
+
 
   const handleFoodPreferenceToggle = (food: string) => {
     setFormData(prev => ({
@@ -211,8 +193,38 @@ const ProfileSetupPage = () => {
     navigate('/login');
   };
 
-  const handleComplete = () => {
-    setShowSuccessMessage(true);
+  const handleComplete = async () => {
+    setIsLoading(true);
+    setApiError('');
+    
+    try {
+      // 프로필 데이터를 서버로 전송
+      const response = await axios.post('http://localhost:8080/api/member/profile', formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      console.log('Profile setup success:', response.data);
+      setShowSuccessMessage(true);
+      
+    } catch (error: any) {
+      console.error('Profile setup error:', error);
+      
+      // 에러 메시지 설정
+      if (error.response) {
+        // 서버에서 응답이 온 경우
+        setApiError(error.response.data.message || '프로필 설정 중 오류가 발생했습니다.');
+      } else if (error.request) {
+        // 요청은 보냈지만 응답을 받지 못한 경우
+        setApiError('서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        // 요청 자체에 문제가 있는 경우
+        setApiError('프로필 설정 중 오류가 발생했습니다.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (showSkipMessage) {
@@ -526,21 +538,30 @@ const ProfileSetupPage = () => {
               </div>
             </div>
 
+            {/* API 에러 메시지 */}
+            {apiError && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-red-600 text-sm">{apiError}</p>
+              </div>
+            )}
+
             {/* 버튼 */}
             <div className="flex gap-4 pt-6">
               <Button
                 variant="outline"
                 onClick={handleSkip}
                 className="flex-1"
+                disabled={isLoading}
               >
                 건너뛰기
               </Button>
-                             <Button
-                 onClick={handleComplete}
-                 className="flex-1 bg-pink-600 hover:bg-pink-700"
-               >
-                 설정하기
-               </Button>
+              <Button
+                onClick={handleComplete}
+                className="flex-1 bg-pink-600 hover:bg-pink-700"
+                disabled={isLoading}
+              >
+                {isLoading ? '설정 중...' : '설정하기'}
+              </Button>
             </div>
           </CardContent>
         </Card>
