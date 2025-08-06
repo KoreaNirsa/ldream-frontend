@@ -28,7 +28,7 @@ import {
   CheckCircle
 } from 'lucide-react';
 import RecommendationForm from '@/components/RecommendationForm';
-import { useAppStore } from '@/store/store';
+import { useAppStore } from '@/types/store';
 import { Recommendation, Profile } from '@/schemas/types';
 
 interface RecommendationsProps {

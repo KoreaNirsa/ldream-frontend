@@ -21,7 +21,7 @@ import {
   Utensils,
   Star
 } from 'lucide-react';
-import { useAppStore } from '@/store/store';
+import { useAppStore } from '@/types/store';
 
 const RecommendationDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

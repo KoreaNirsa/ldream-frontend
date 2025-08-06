@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { useAppStore } from "@/store/store"
+import { useAppStore } from "@/types/store"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
