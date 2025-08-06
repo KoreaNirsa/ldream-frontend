@@ -7,16 +7,16 @@ AI 기반 데이트 코스 추천 플랫폼 **러블리 드림**의 프론트엔
 
 ---
 
-## 📌 기술 스택
-
-- React + Vite  
-- TypeScript  
-- Tailwind CSS  
-- Shadcn UI  
-- Lucide React Icons  
-- Zustand (전역 상태 관리 예정)  
-- GitHub Actions (CI/CD)  
-- CloudFront + S3 + Route53 (배포 예정)
+## 📌 프론트 엔드 기술 스택
+일부 기술은 추후 적용 예정입니다.  
+- Tailwind
+- TypeScript
+- React + Vite
+- react-router
+- Tailwind 
+- Zustand
+- Zod
+- TasnStack Query
 
 ---
 
