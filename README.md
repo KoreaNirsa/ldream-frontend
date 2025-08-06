@@ -22,6 +22,7 @@ AI 기반 데이트 코스 추천 플랫폼 **러블리 드림**의 프론트엔
 - Zustand
 - Zod
 - TasnStack Query
+- Axios
 
 ---
 
