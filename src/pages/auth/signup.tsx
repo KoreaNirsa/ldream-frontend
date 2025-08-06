@@ -13,6 +13,29 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import axios from 'axios';
 
+// 14세 이상 생년월일 계산 함수
+const getMaxBirthDate = () => {
+  const today = new Date();
+  const maxDate = new Date(today.getFullYear() - 14, today.getMonth(), today.getDate());
+  return maxDate.toISOString().split('T')[0];
+};
+
+// 14세 이상 검증 함수
+const isOver14YearsOld = (birthDate: string) => {
+  if (!birthDate) return false;
+  
+  const today = new Date();
+  const birth = new Date(birthDate);
+  const age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    return age - 1 >= 14;
+  }
+  
+  return age >= 14;
+};
+
 // 폼 스키마 정의
 const signupSchema = z.object({
   email: z.string().email('올바른 이메일 주소를 입력해주세요'),
@@ -27,6 +50,9 @@ const signupSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: "비밀번호가 일치하지 않습니다",
   path: ["confirmPassword"],
+}).refine((data) => isOver14YearsOld(data.birthDate), {
+  message: "만 14세 이상만 가입 가능합니다",
+  path: ["birthDate"],
 });
 
 type SignupFormData = z.infer<typeof signupSchema>;
@@ -42,6 +68,7 @@ const SignupPage = () => {
   const [agreeToMarketing, setAgreeToMarketing] = useState(false);
   const [agreeToPersonalization, setAgreeToPersonalization] = useState(false);
   const [agreeToAll, setAgreeToAll] = useState(false);
+  const [agreeToAge, setAgreeToAge] = useState(false);
   
   // 이메일 인증 관련 상태
   const [emailVerificationCode, setEmailVerificationCode] = useState('');
@@ -257,7 +284,8 @@ const SignupPage = () => {
            agreeLocation: agreeToLocation,
            agreePaymentPolicy: agreeToPayment,
            agreeMarketing: agreeToMarketing,
-           agreePersonalized: agreeToPersonalization
+           agreePersonalized: agreeToPersonalization,
+           agreeAge: agreeToAge
          }
        };
       
@@ -321,6 +349,7 @@ const SignupPage = () => {
     setAgreeToPayment(checked);
     setAgreeToMarketing(checked);
     setAgreeToPersonalization(checked);
+    setAgreeToAge(checked);
   };
 
   const handleSocialSignup = (provider: string) => {
@@ -475,25 +504,28 @@ const SignupPage = () => {
                 {errors.nickname && <p className="text-red-500 text-sm">{errors.nickname.message}</p>}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="birthDate">생년월일</Label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="birthDate"
-                      type="date"
-                      {...register('birthDate')}
-                      onChange={(e) => {
-                        handleFormChange('birthDate', e.target.value);
-                        setTimeout(() => trigger('birthDate'), 0);
-                      }}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                  {errors.birthDate && <p className="text-red-500 text-sm">{errors.birthDate.message}</p>}
-                </div>
+                               <div className="grid grid-cols-2 gap-4">
+                   <div className="space-y-2">
+                     <Label htmlFor="birthDate">생년월일</Label>
+                     <div className="relative">
+                       <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                       <Input
+                         id="birthDate"
+                         type="date"
+                         {...register('birthDate')}
+                         onChange={(e) => {
+                           handleFormChange('birthDate', e.target.value);
+                           // 실시간 검증을 위해 trigger 호출
+                           setTimeout(() => trigger('birthDate'), 0);
+                         }}
+                         className="pl-10"
+                         required
+                         max={getMaxBirthDate()}
+                       />
+                     </div>
+                     {errors.birthDate && <p className="text-red-500 text-sm">{errors.birthDate.message}</p>}
+                     <p className="text-xs text-gray-500">만 14세 이상만 가입 가능합니다</p>
+                   </div>
                 <div className="space-y-2">
                   <Label htmlFor="gender">성별</Label>
                   <select
@@ -582,6 +614,19 @@ const SignupPage = () => {
 
                 <Separator />
 
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="age"
+                    checked={agreeToAge}
+                    onCheckedChange={(checked) => setAgreeToAge(checked as boolean)}
+                    required
+                  />
+                  <Label htmlFor="age" className="text-sm">
+                    <span className="text-red-500">[필수]</span>{' '}
+                    만 14세 이상입니다.
+                  </Label>
+                </div>
+                
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="terms"
@@ -677,7 +722,7 @@ const SignupPage = () => {
                              <Button 
                  type="submit" 
                  className="w-full bg-pink-600 hover:bg-pink-700"
-                 disabled={!agreeToTerms || !agreeToPrivacy || !agreeToLocation || !agreeToPayment || !isEmailVerified || isLoading}
+                 disabled={!agreeToAge || !agreeToTerms || !agreeToPrivacy || !agreeToLocation || !agreeToPayment || !isEmailVerified || isLoading}
                >
                  {isLoading ? '회원가입 중...' : !isEmailVerified ? '이메일 인증 필요' : '회원가입'}
                </Button>
