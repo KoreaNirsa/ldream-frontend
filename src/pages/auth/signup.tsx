@@ -145,19 +145,29 @@ const SignupPage = () => {
       setVerificationTimer(300); // 5분 = 300초
       setVerificationError('');
       
-    } catch (error: any) {
-      console.error('Email verification error:', error);
-      
-      if (error.response) {
-        setVerificationError(error.response.data.message || '인증 코드 전송에 실패했습니다.');
-      } else if (error.request) {
-        setVerificationError('서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.');
-      } else {
-        setVerificationError('인증 코드 전송에 실패했습니다. 다시 시도해주세요.');
-      }
-    } finally {
-      setIsSendingCode(false);
-    }
+         } catch (error: any) {
+       console.error('Email verification error:', error);
+       
+       if (error.response) {
+         const errorCode = error.response.data.code;
+         const errorMessage = error.response.data.message;
+         
+         // 서버 응답 코드에 따른 처리
+         if (errorCode === 'A004') {
+           // 이미 존재하는 이메일
+           setVerificationError(errorMessage);
+         } else {
+           // 기타 에러
+           setVerificationError(errorMessage || '인증 코드 전송에 실패했습니다.');
+         }
+       } else if (error.request) {
+         setVerificationError('서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.');
+       } else {
+         setVerificationError('인증 코드 전송에 실패했습니다. 다시 시도해주세요.');
+       }
+     } finally {
+       setIsSendingCode(false);
+     }
   };
 
   // 이메일 인증 코드 확인
@@ -405,16 +415,21 @@ const SignupPage = () => {
                   >
                     {isSendingCode ? '전송 중...' : isEmailVerified ? '인증 완료' : '인증'}
                   </Button>
-                </div>
-                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-                
-                {/* 이메일 인증 완료 표시 */}
-                {isEmailVerified && (
-                  <div className="flex items-center gap-2 text-green-600 text-sm">
-                    <CheckCircle className="h-4 w-4" />
-                    <span>인증이 완료되었습니다</span>
-                  </div>
-                )}
+                                 </div>
+                 {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+                 
+                 {/* 이메일 인증 에러 메시지 */}
+                 {verificationError && (
+                   <p className="text-red-500 text-sm">{verificationError}</p>
+                 )}
+                 
+                 {/* 이메일 인증 완료 표시 */}
+                 {isEmailVerified && (
+                   <div className="flex items-center gap-2 text-green-600 text-sm">
+                     <CheckCircle className="h-4 w-4" />
+                     <span>인증이 완료되었습니다</span>
+                   </div>
+                 )}
               </div>
 
                              {/* 이메일 인증 코드 입력 */}
@@ -459,14 +474,8 @@ const SignupPage = () => {
                       </div>
                     )}
                   
-                  {/* 인증 에러 메시지 */}
-                  {verificationError && (
-                    <p className="text-red-500 text-sm">{verificationError}</p>
-                  )}
-                  
-                  
-                </div>
-              )}
+                                   </div>
+               )}
 
               <div className="space-y-2">
                 <Label htmlFor="name">이름</Label>
