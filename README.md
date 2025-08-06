@@ -5,6 +5,11 @@ AI 기반 데이트 코스 추천 플랫폼 **러블리 드림**의 프론트엔
 
 > 현재 퍼블리싱 작업은 약 70~80% 완료된 상태이며, 모든 기능 구현 후 디테일한 퍼블리싱 작업이 추가로 진행될 예정입니다.
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/731037ee-cc0b-4689-b06f-5e641d1f1df3" width="500"/>
+  <img src="https://github.com/user-attachments/assets/f5e7f95c-79a8-4770-b400-542be3f2ec9a" width="500"/>
+</p>
+
 ---
 
 ## 📌 프론트 엔드 기술 스택
