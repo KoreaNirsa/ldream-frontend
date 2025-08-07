@@ -14,6 +14,7 @@ const ProfileSetupPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const memberId = location.state?.memberId;
+  const fromUrl = location.state?.from;
   
   const [showSkipMessage, setShowSkipMessage] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -240,8 +241,8 @@ const ProfileSetupPage = () => {
     }
   };
 
-  // memberId가 없으면 회원가입 페이지로 리다이렉트
-  if (!memberId) {
+  // /signup에서 온 경우가 아니면 접근 제한
+  if (fromUrl !== '/signup') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center p-4">
         <Card className="shadow-lg max-w-md w-full">
@@ -249,8 +250,8 @@ const ProfileSetupPage = () => {
             <Heart className="h-12 w-12 text-pink-600 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-gray-900 mb-2">접근 오류</h2>
             <p className="text-gray-600 mb-6">
-              회원 정보를 찾을 수 없습니다.<br />
-              회원가입을 다시 진행해주세요.
+              회원가입 페이지에서만 접근 가능합니다.<br />
+              회원가입을 먼저 진행해주세요.
             </p>
             <Button 
               onClick={() => navigate('/signup')}

@@ -300,7 +300,7 @@ const SignupPage = () => {
        };
       
       // API 요청
-      const response = await axios.post('http://localhost:8080/api/auth/signup', signupData, {
+      const response = await axios.post('http://localhost:8080/api/member/signup', signupData, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -311,8 +311,8 @@ const SignupPage = () => {
       // memberId 추출
       const memberId = response.data.result;
       
-      // 성공 시 프로필 설정 페이지로 이동 (memberId와 함께)
-      navigate('/profile-setup', { state: { memberId } });
+      // 성공 시 프로필 설정 페이지로 이동 (memberId와 함께, 출처 URL도 포함)
+      navigate('/profile-setup', { state: { memberId, from: '/signup' } });
       
     } catch (error: any) {
       console.error('Signup error:', error);
