@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { Eye, EyeOff, Mail, Lock, Heart } from 'lucide-react';
+import axios from 'axios';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -14,13 +15,52 @@ const LoginPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // 로그인 로직 구현
-    console.log('Login attempt:', { email, password, rememberMe });
-    navigate('/dashboard');
-  };
+    
+    setIsLoading(true);
+    
+        try {
+      const response = await axios.post('http://localhost:8080/api/auth/login', {
+        email,
+        password,
+        rememberMe
+      }, {
+        withCredentials: true, // 쿠키 포함
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      console.log('Login successful:', response.data);
+      
+      // 로그인 성공 시 토큰 저장 (있는 경우)
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
+      
+      // 대시보드로 이동
+      navigate('/dashboard');
+              } catch (error: any) {
+      console.error('Login error:', error);
+      
+      if (error.response) {
+        // 서버에서 응답이 왔지만 에러인 경우
+        console.error('Login failed:', error.response.data);
+        alert('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
+      } else if (error.request) {
+        // 요청은 보냈지만 응답을 받지 못한 경우
+        alert('서버에 연결할 수 없습니다. 다시 시도해주세요.');
+      } else {
+        // 요청 자체를 보내지 못한 경우
+        alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+    };
 
   const handleSocialLogin = (provider: string) => {
     console.log(`${provider} 로그인 시도`);
@@ -59,6 +99,7 @@ const LoginPage = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10"
                     required
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -75,11 +116,13 @@ const LoginPage = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10 pr-10"
                     required
+                    disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                    disabled={isLoading}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -92,6 +135,7 @@ const LoginPage = () => {
                     id="remember"
                     checked={rememberMe}
                     onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                    disabled={isLoading}
                   />
                   <Label htmlFor="remember" className="text-sm">로그인 상태 유지</Label>
                 </div>
@@ -100,8 +144,12 @@ const LoginPage = () => {
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full bg-pink-600 hover:bg-pink-700">
-                로그인
+              <Button 
+                type="submit" 
+                className="w-full bg-pink-600 hover:bg-pink-700" 
+                disabled={isLoading}
+              >
+                {isLoading ? '로그인 중...' : '로그인'}
               </Button>
             </form>
 

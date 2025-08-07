@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import axios from 'axios';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,8 +40,51 @@ const Layout = () => {
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [isPartnerConnected, setIsPartnerConnected] = useState(true);
-  const [currentUser, setCurrentUser] = useState("사랑스러운 사용자");
+  const [currentUser, setCurrentUser] = useState<string | null>("사랑스러운 사용자");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // 로그아웃 함수
+  const handleLogout = async () => {
+    try {
+      await axios.post('http://localhost:8080/api/auth/logout', {}, {
+        withCredentials: true, // 쿠키 포함
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      console.log('Logout successful');
+      
+      // 로컬 상태 업데이트
+      setIsLoggedIn(false);
+      setCurrentUser(null);
+      
+      // 로컬 스토리지에서 토큰 제거
+      localStorage.removeItem('token');
+      
+      // 로그인 페이지로 이동
+      navigate('/login');
+    } catch (error: any) {
+      console.error('Logout error:', error);
+      
+      if (error.response) {
+        // 서버에서 응답이 왔지만 에러인 경우
+        console.error('Logout failed:', error.response.data);
+      } else if (error.request) {
+        // 요청은 보냈지만 응답을 받지 못한 경우
+        console.error('Server connection failed');
+      } else {
+        // 요청 자체를 보내지 못한 경우
+        console.error('Logout request failed');
+      }
+      
+      // 에러가 발생해도 로컬 상태는 업데이트
+      setIsLoggedIn(false);
+      setCurrentUser(null);
+      localStorage.removeItem('token');
+      navigate('/login');
+    }
+  };
 
   // 기본 데이터 설정
   const defaultWeather = {
@@ -265,7 +309,7 @@ const Layout = () => {
                         설정
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => setIsLoggedIn(false)} className="cursor-pointer">
+                      <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
                         <LogOut className="h-4 w-4 mr-2" />
                         로그아웃
                       </DropdownMenuItem>
