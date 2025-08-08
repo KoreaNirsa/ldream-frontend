@@ -14,6 +14,8 @@ interface AppState {
   // Auth State
   isLoggedIn: boolean
   currentUser: string | null
+  accessToken: string | null
+  tokenExpiresAt: number | null
   
   // UI State
   selectedRegion: string
@@ -157,7 +159,12 @@ interface AppState {
   
   // Auth actions
   login: (username: string, password: string) => boolean
+  loginWithToken: (user: string, token: string, expiresIn?: number) => void
   logout: () => void
+  setAccessToken: (token: string | null) => void
+  setTokenExpiry: (expiresIn: number) => void
+  isTokenExpired: () => boolean
+  refreshToken: () => Promise<boolean>
   
   // Utility actions
   handleLike: (memoryId: number) => void
@@ -169,6 +176,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Initial Auth State
   isLoggedIn: false,
   currentUser: null,
+  accessToken: null,
+  tokenExpiresAt: null,
   
   // Initial UI State
   selectedRegion: "서울",
@@ -900,7 +909,68 @@ export const useAppStore = create<AppState>((set, get) => ({
     return false
   },
   
-  logout: () => set({ isLoggedIn: false, currentUser: null }),
+  loginWithToken: (user, token, expiresIn) => {
+    const expiresAt = expiresIn ? Date.now() + expiresIn : null;
+    set({ isLoggedIn: true, currentUser: user, accessToken: token, tokenExpiresAt: expiresAt });
+  },
+  
+  logout: () => set({ isLoggedIn: false, currentUser: null, accessToken: null, tokenExpiresAt: null }),
+  
+  setAccessToken: (token) => set({ accessToken: token }),
+  
+  setTokenExpiry: (expiresIn) => {
+    const expiresAt = Date.now() + expiresIn;
+    set({ tokenExpiresAt: expiresAt });
+  },
+  
+  isTokenExpired: () => {
+    const { tokenExpiresAt } = get();
+    if (!tokenExpiresAt) return true;
+    return Date.now() >= tokenExpiresAt;
+  },
+  
+  refreshToken: async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/reissue', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Token refresh failed');
+      }
+
+      const data = await response.json();
+      
+      if (data.accessToken) {
+        const expiresAt = data.expiresIn ? Date.now() + data.expiresIn : null;
+        set({ 
+          accessToken: data.accessToken, 
+          tokenExpiresAt: expiresAt 
+        });
+        
+        // localStorage에도 저장
+        localStorage.setItem('accessToken', data.accessToken);
+        if (expiresAt) {
+          localStorage.setItem('tokenExpiresAt', expiresAt.toString());
+        }
+        
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Token refresh error:', error);
+      // 토큰 갱신 실패 시 로그아웃
+      get().logout();
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('tokenExpiresAt');
+      return false;
+    }
+  },
   
   // Utility actions
   handleLike: (memoryId) => set((state) => {

@@ -7,10 +7,12 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { Eye, EyeOff, Mail, Lock, Heart } from 'lucide-react';
-import axios from 'axios';
+import { useAppStore } from '@/types/store';
+import axiosInstance from '@/config/axios';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { loginWithToken } = useAppStore();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState('');
@@ -23,22 +25,26 @@ const LoginPage = () => {
     setIsLoading(true);
     
         try {
-      const response = await axios.post('http://localhost:8080/api/auth/login', {
+      const response = await axiosInstance.post('/api/auth/login', {
         email,
         password,
         rememberMe
-      }, {
-        withCredentials: true, // 쿠키 포함
-        headers: {
-          'Content-Type': 'application/json',
-        }
       });
 
       console.log('Login successful:', response.data);
       
-      // 로그인 성공 시 토큰 저장 (있는 경우)
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
+      // JWT 토큰을 zustand에 저장
+      if (response.data.accessToken) {
+        const user = response.data.user || email;
+        loginWithToken(user, response.data.accessToken, response.data.expiresIn);
+        
+        // localStorage에도 저장 (페이지 새로고침 시 복원용)
+        localStorage.setItem('accessToken', response.data.accessToken);
+        localStorage.setItem('currentUser', user);
+        if (response.data.expiresIn) {
+          const expiresAt = Date.now() + response.data.expiresIn;
+          localStorage.setItem('tokenExpiresAt', expiresAt.toString());
+        }
       }
       
       // 대시보드로 이동

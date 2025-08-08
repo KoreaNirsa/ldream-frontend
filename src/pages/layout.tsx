@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@/components/theme-provider';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import axios from 'axios';
+import { useAppStore } from '@/types/store';
+import axiosInstance from '@/config/axios';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +25,6 @@ import {
   Settings,
   LogOut,
   CreditCard,
-  Calendar,
   MessageSquare,
   Share,
   History,
@@ -38,29 +37,31 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAppStore();
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [isPartnerConnected, setIsPartnerConnected] = useState(true);
+  const [isPartnerConnected] = useState(true);
   const [currentUser, setCurrentUser] = useState<string | null>("사랑스러운 사용자");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // 로그아웃 함수
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:8080/api/auth/logout', {}, {
-        withCredentials: true, // 쿠키 포함
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
+      // GET 요청으로 변경 (axios 인스턴스가 자동으로 토큰 추가)
+      await axiosInstance.get('/api/auth/logout');
 
       console.log('Logout successful');
+      
+      // zustand store 상태 업데이트
+      logout();
       
       // 로컬 상태 업데이트
       setIsLoggedIn(false);
       setCurrentUser(null);
       
-      // 로컬 스토리지에서 토큰 제거
-      localStorage.removeItem('token');
+      // 로컬 스토리지에서 토큰 및 사용자 정보 제거
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('tokenExpiresAt');
       
       // 로그인 페이지로 이동
       navigate('/login');
@@ -79,9 +80,12 @@ const Layout = () => {
       }
       
       // 에러가 발생해도 로컬 상태는 업데이트
+      logout();
       setIsLoggedIn(false);
       setCurrentUser(null);
-      localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('tokenExpiresAt');
       navigate('/login');
     }
   };
