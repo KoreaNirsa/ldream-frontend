@@ -9,6 +9,9 @@ import { Separator } from '@/components/ui/separator';
 import { Eye, EyeOff, Mail, Lock, Heart } from 'lucide-react';
 import { useAppStore } from '@/types/store';
 import axiosInstance from '@/config/axios';
+import { queryClient } from '@/queryClient';
+import { getMemberProfile } from '@/hooks/useMemberProfile';
+import { decodeJwtPayload } from '@/config/utils';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -33,17 +36,27 @@ const LoginPage = () => {
 
       console.log('Login successful:', response.data);
       
-      // JWT 토큰을 zustand에 저장
+      // JWT 토큰을 zustand에 저장 (닉네임 기준)
       if (response.data.accessToken) {
-        const user = response.data.user || email;
-        loginWithToken(user, response.data.accessToken, response.data.expiresIn);
+        const userNickname = response.data.user?.nickname || response.data.nickname || email;
+        loginWithToken(userNickname, response.data.accessToken, response.data.expiresIn);
         
         // localStorage에도 저장 (페이지 새로고침 시 복원용)
         localStorage.setItem('accessToken', response.data.accessToken);
-        localStorage.setItem('currentUser', user);
+        localStorage.setItem('currentUser', userNickname);
         if (response.data.expiresIn) {
           const expiresAt = Date.now() + response.data.expiresIn;
           localStorage.setItem('tokenExpiresAt', expiresAt.toString());
+        }
+
+        // JWT의 subject(memberId) 기반으로 회원 프로필 프리페치 (5분 캐시)
+        const payload = decodeJwtPayload<{ sub?: string | number }>(response.data.accessToken);
+        const memberId = payload?.sub;
+        if (memberId) {
+          queryClient.prefetchQuery({
+            queryKey: ['member', memberId],
+            queryFn: () => getMemberProfile(memberId),
+          });
         }
       }
       

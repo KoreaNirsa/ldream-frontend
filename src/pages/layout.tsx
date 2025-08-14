@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@/components/theme-provider';
 import Footer from '@/components/Footer';
@@ -37,10 +37,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useAppStore();
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { logout, currentUser, accessToken } = useAppStore();
+  // JWT 존재 여부로 인증 상태 결정 (토큰이 있을 때만 프로필 정보 노출)
+  const isAuthenticated = useMemo(() => Boolean(accessToken), [accessToken]);
   const [isPartnerConnected] = useState(true);
-  const [currentUser, setCurrentUser] = useState<string | null>("사랑스러운 사용자");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // 로그아웃 함수
@@ -51,12 +51,8 @@ const Layout = () => {
 
       console.log('Logout successful');
       
-      // zustand store 상태 업데이트
+      // zustand store 상태 업데이트 (로컬 상태 제거)
       logout();
-      
-      // 로컬 상태 업데이트
-      setIsLoggedIn(false);
-      setCurrentUser(null);
       
       // 로컬 스토리지에서 토큰 및 사용자 정보 제거
       localStorage.removeItem('accessToken');
@@ -79,10 +75,8 @@ const Layout = () => {
         console.error('Logout request failed');
       }
       
-      // 에러가 발생해도 로컬 상태는 업데이트
+      // 에러가 발생해도 상태 정리
       logout();
-      setIsLoggedIn(false);
-      setCurrentUser(null);
       localStorage.removeItem('accessToken');
       localStorage.removeItem('currentUser');
       localStorage.removeItem('tokenExpiresAt');
@@ -267,7 +261,7 @@ const Layout = () => {
                 </DropdownMenu>
 
                 {/* User Menu */}
-                {isLoggedIn ? (
+                {isAuthenticated ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="flex items-center space-x-2">
@@ -357,16 +351,16 @@ const Layout = () => {
           <div className="mb-8">
             <div className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg p-6 text-white">
               <h2 className="text-2xl font-bold mb-2">
-                {isLoggedIn ? `안녕하세요, ${currentUser}님! 💕` : "안녕하세요, 방문자님! 👋"}
+                {isAuthenticated ? `안녕하세요, ${currentUser}님! 💕` : "안녕하세요, 방문자님! 👋"}
               </h2>
               <p className="text-pink-100">
-                {isLoggedIn
+                {isAuthenticated
                   ? isPartnerConnected 
                     ? `${defaultPartnerProfile.nickname}님과 함께 오늘도 특별한 데이트를 계획해보세요 💕`
                     : "오늘도 특별한 데이트를 계획해보세요!"
                   : "로그인하고 특별한 데이트를 계획해보세요!"}
               </p>
-              {isLoggedIn && (
+              {isAuthenticated && (
                 <div className="mt-4 flex items-center space-x-6 text-sm">
                   <div className="flex items-center space-x-2">
                     <Crown className="h-4 w-4" />
