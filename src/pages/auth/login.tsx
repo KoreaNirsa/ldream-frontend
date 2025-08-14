@@ -143,10 +143,10 @@ const LoginPage = () => {
                     onCheckedChange={(checked) => setRememberMe(checked as boolean)}
                     disabled={isLoading}
                   />
-                  <Label htmlFor="remember" className="text-sm">로그인 상태 유지</Label>
+                  <Label htmlFor="remember" className="text-sm">로그인 상태 유지 (준비중)</Label>
                 </div>
                 <Link to="/forgot-password" className="text-sm text-pink-600 hover:text-pink-700">
-                  비밀번호 찾기
+                  비밀번호 찾기 (준비중)
                 </Link>
               </div>
 
@@ -181,7 +181,7 @@ const LoginPage = () => {
                   <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                   <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                 </svg>
-                Google로 로그인
+                Google로 로그인 (준비중)
               </Button>
 
               <Button
@@ -192,7 +192,7 @@ const LoginPage = () => {
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 3C6.48 3 2 6.48 2 12c0 4.41 2.87 8.14 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.82.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
                 </svg>
-                카카오로 로그인
+                카카오로 로그인 (준비중)
               </Button>
 
               <Button
@@ -203,7 +203,7 @@ const LoginPage = () => {
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727v12.845z"/>
                 </svg>
-                네이버로 로그인
+                네이버로 로그인 (준비중) 
               </Button>
             </div>
 
