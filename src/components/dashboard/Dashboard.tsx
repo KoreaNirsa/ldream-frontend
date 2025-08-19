@@ -14,6 +14,7 @@ interface DashboardProps {
   isPartnerConnected: boolean
   isLoggedIn: boolean
   onLoginClick: () => void
+  isWeatherLoading?: boolean
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ weather, profile, partnerProfile, userSubscription, memories, isPartnerConnected, isLoggedIn, onLoginClick }) => {
