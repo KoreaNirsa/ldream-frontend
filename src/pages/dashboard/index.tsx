@@ -1,7 +1,11 @@
 import React from 'react';
 import Dashboard from '@/components/dashboard/Dashboard';
+import { useMemberProfile } from '@/hooks/useMemberProfile';
 
 const DashboardPage = () => {
+  // API에서 회원 프로필 데이터 가져오기
+  const { data: memberProfile } = useMemberProfile();
+
   // 기본 데이터 설정
   const defaultWeather = {
     temp: 18,
@@ -12,19 +16,19 @@ const DashboardPage = () => {
   };
 
   const defaultProfile = {
-    nickname: "사랑스러운 사용자",
+    nickname: memberProfile?.myNickname || "사랑스러운 사용자",
     locations: ["서울", "부산", "제주도"],
     interests: ["영화", "음악", "여행", "맛집 탐방"]
   };
 
   const defaultPartnerProfile = {
     name: "파트너",
-    nickname: "사랑스러운 파트너",
+    nickname: memberProfile?.partnerNickname || "사랑스러운 파트너",
     interests: ["영화", "음악", "여행", "카페 투어"]
   };
 
   const defaultUserSubscription = {
-    plan: "premium",
+    plan: memberProfile?.tier?.toLowerCase() || "premium",
     features: ["기본 기능", "프리미엄 기능", "AI 추천", "무제한 저장"]
   };
 
@@ -106,7 +110,7 @@ const DashboardPage = () => {
         partnerProfile={defaultPartnerProfile}
         userSubscription={defaultUserSubscription}
         memories={defaultMemories}
-        isPartnerConnected={true}
+        isPartnerConnected={Boolean(memberProfile?.partnerNickname)}
         isLoggedIn={true}
         onLoginClick={() => console.log('Login clicked')}
       />

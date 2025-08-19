@@ -38,7 +38,14 @@ const LoginPage = () => {
       
       // JWT 토큰을 zustand에 저장 (닉네임 기준)
       if (response.data.accessToken) {
-        const userNickname = response.data.user?.nickname || response.data.nickname || email;
+        // API 응답에서 myNickname을 우선적으로 사용, 없으면 기존 로직 사용
+        const userNickname = response.data.myNickname || response.data.user?.nickname || response.data.nickname || email;
+        
+        // 디버깅을 위한 로그
+        console.log('Login - accessToken:', response.data.accessToken);
+        console.log('Login - expiresIn:', response.data.expiresIn);
+        console.log('Login - userNickname:', userNickname);
+        
         loginWithToken(userNickname, response.data.accessToken, response.data.expiresIn);
         
         // localStorage에도 저장 (페이지 새로고침 시 복원용)
@@ -47,11 +54,15 @@ const LoginPage = () => {
         if (response.data.expiresIn) {
           const expiresAt = Date.now() + response.data.expiresIn;
           localStorage.setItem('tokenExpiresAt', expiresAt.toString());
+          console.log('Login - expiresAt:', expiresAt);
         }
 
         // JWT의 subject(memberId) 기반으로 회원 프로필 프리페치 (5분 캐시)
         const payload = decodeJwtPayload<{ sub?: string | number }>(response.data.accessToken);
         const memberId = payload?.sub;
+        console.log('Login - JWT payload:', payload);
+        console.log('Login - memberId:', memberId);
+        
         if (memberId) {
           queryClient.prefetchQuery({
             queryKey: ['member', memberId],

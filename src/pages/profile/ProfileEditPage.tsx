@@ -1,23 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfileEdit from '@/components/profile/ProfileEdit';
+import { useMemberProfile } from '@/hooks/useMemberProfile';
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
+  // API에서 회원 프로필 데이터 가져오기
+  const { data: memberProfile } = useMemberProfile();
 
   const [profile, setProfile] = useState({
-    nickname: "사랑스러운 사용자",
+    nickname: memberProfile?.myNickname || "사랑스러운 사용자",
     locations: ["서울", "부산", "제주도"],
     interests: ["영화", "음악", "여행", "맛집 탐방"],
     name: "사용자",
     birthDate: "1995-01-01",
     mbti: "ENFP",
-    mileage: 340
+    mileage: memberProfile?.mileage || 340
   });
 
   const defaultPartnerProfile = {
     name: "파트너",
-    nickname: "사랑스러운 파트너",
+    nickname: memberProfile?.partnerNickname || "사랑스러운 파트너",
     interests: ["영화", "음악", "여행", "카페 투어"],
     birthDate: "1995-06-15",
     mbti: "ISFJ",

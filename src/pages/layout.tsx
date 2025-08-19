@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/types/store';
 import axiosInstance from '@/config/axios';
+import { useMemberProfile } from '@/hooks/useMemberProfile';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,6 +43,13 @@ const Layout = () => {
   const isAuthenticated = useMemo(() => Boolean(accessToken), [accessToken]);
   const [isPartnerConnected] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // API에서 회원 프로필 데이터 가져오기
+  const { data: memberProfile, isLoading: isProfileLoading } = useMemberProfile();
+
+  // 디버깅을 위한 콘솔 로그
+  console.log('Layout - memberProfile:', memberProfile);
+  console.log('Layout - isProfileLoading:', isProfileLoading);
 
   // 로그아웃 함수
   const handleLogout = async () => {
@@ -93,24 +101,45 @@ const Layout = () => {
     dust: "좋음"
   };
 
-  const defaultProfile = {
-    nickname: "사랑스러운 사용자",
+  // API 데이터를 기반으로 프로필 정보 설정
+  const profile = {
+    nickname: memberProfile?.myNickname || "사랑스러운 사용자",
     locations: ["서울", "부산", "제주도"],
     interests: ["영화", "음악", "여행", "맛집 탐방"]
   };
 
-  const defaultPartnerProfile = {
+  const partnerProfile = {
     name: "파트너",
-    nickname: "사랑스러운 파트너",
+    nickname: memberProfile?.partnerNickname || "사랑스러운 파트너",
     interests: ["영화", "음악", "여행", "카페 투어"]
   };
 
-  const defaultUserSubscription = {
-    plan: "premium",
+  const userSubscription = {
+    plan: memberProfile?.tier?.toLowerCase() || "premium",
     features: ["기본 기능", "프리미엄 기능", "AI 추천", "무제한 저장"]
   };
 
-  const totalMileage = 340;
+  // API 데이터를 기반으로 통계 정보 설정
+  // 임시로 테스트 데이터 사용 (API 데이터가 로딩되지 않을 때)
+  const testData = {
+    myNickname: "너구리",
+    partnerNickname: null,
+    mileage: 0,
+    tier: "Free",
+    memoryCount: 0,
+    aiRecommendation: 0
+  };
+
+  const totalMileage = memberProfile?.mileage ?? testData.mileage;
+  const memoryCount = memberProfile?.memoryCount ?? testData.memoryCount;
+  const aiRecommendation = memberProfile?.aiRecommendation ?? testData.aiRecommendation;
+  const tier = memberProfile?.tier ?? testData.tier;
+
+  // 디버깅을 위한 콘솔 로그
+  console.log('Layout - totalMileage:', totalMileage);
+  console.log('Layout - memoryCount:', memoryCount);
+  console.log('Layout - aiRecommendation:', aiRecommendation);
+  console.log('Layout - tier:', memberProfile?.tier);
 
   const navigation = [
     { name: '대시보드', path: '/', icon: '🏠' },
@@ -269,13 +298,15 @@ const Layout = () => {
                           <AvatarImage src="/placeholder-user.jpg" />
                           <AvatarFallback>U</AvatarFallback>
                         </Avatar>
-                        <span className="hidden md:block text-sm font-medium">{currentUser}</span>
+                        <span className="hidden md:block text-sm font-medium">{profile.nickname}</span>
                         <ChevronDown className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                       <DropdownMenuLabel className="cursor-pointer">
-                        {isPartnerConnected ? `${defaultProfile.nickname} & ${defaultPartnerProfile.nickname}` : defaultProfile.nickname}
+                        {memberProfile?.partnerNickname 
+                          ? `${profile.nickname} & ${partnerProfile.nickname}` 
+                          : profile.nickname}
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
@@ -351,20 +382,24 @@ const Layout = () => {
           <div className="mb-8">
             <div className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg p-6 text-white">
               <h2 className="text-2xl font-bold mb-2">
-                {isAuthenticated ? `안녕하세요, ${currentUser}님! 💕` : "안녕하세요, 방문자님! 👋"}
+                {isAuthenticated ? `안녕하세요, ${profile.nickname}님! 💕` : "안녕하세요, 방문자님! 👋"}
               </h2>
               <p className="text-pink-100">
                 {isAuthenticated
-                  ? isPartnerConnected 
-                    ? `${defaultPartnerProfile.nickname}님과 함께 오늘도 특별한 데이트를 계획해보세요 💕`
-                    : "오늘도 특별한 데이트를 계획해보세요!"
+                  ? memberProfile?.partnerNickname 
+                    ? `${memberProfile.partnerNickname}님과 함께 오늘도 특별한 데이트를 계획해보세요 💕`
+                    : "커플, 친구 또는 가족과 인연을 맺어 특별한 데이트를 계획해보세요 💕"
                   : "로그인하고 특별한 데이트를 계획해보세요!"}
               </p>
               {isAuthenticated && (
                 <div className="mt-4 flex items-center space-x-6 text-sm">
                   <div className="flex items-center space-x-2">
                     <Crown className="h-4 w-4" />
-                    <span>{defaultUserSubscription.plan === "premium" ? "프리미엄" : "무료"} 플랜</span>
+                    <span>
+                      {tier === "Free" ? "무료 플랜" : 
+                       tier === "Premium" ? "프리미엄 플랜" : 
+                       tier === "Pro" ? "프로 플랜" : "프리미엄 플랜"}
+                    </span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Coins className="h-4 w-4" />
@@ -372,11 +407,11 @@ const Layout = () => {
                   </div>
                   <div className="flex items-center space-x-2">
                     <Camera className="h-4 w-4" />
-                    <span>추억: 4개</span>
+                    <span>추억: {memoryCount}개</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Sparkles className="h-4 w-4" />
-                    <span>AI 추천: 3개</span>
+                    <span>AI 추천: {aiRecommendation}개</span>
                   </div>
                 </div>
               )}

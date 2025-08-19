@@ -911,7 +911,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   
   loginWithToken: (user, token, expiresIn) => {
     const expiresAt = expiresIn ? Date.now() + expiresIn : null;
+    
+    // 디버깅을 위한 로그
+    console.log('Store - loginWithToken called with:', { user, token, expiresIn, expiresAt });
+    
     set({ isLoggedIn: true, currentUser: user, accessToken: token, tokenExpiresAt: expiresAt });
+    
+    // 저장 후 상태 확인
+    console.log('Store - state after loginWithToken:', get());
   },
   
   logout: () => set({ isLoggedIn: false, currentUser: null, accessToken: null, tokenExpiresAt: null }),
