@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { useAppStore } from '@/types/store';
+import { useAuthStore } from '@/store';
 
 // axios 인스턴스 생성
 const axiosInstance = axios.create({
@@ -10,7 +10,7 @@ const axiosInstance = axios.create({
 // 요청 인터셉터: 모든 요청에 토큰 추가
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const { accessToken } = useAppStore.getState();
+    const { accessToken } = useAuthStore.getState();
     
     if (accessToken && config.headers) {
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -35,7 +35,7 @@ axiosInstance.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       
-      const { refreshToken, accessToken } = useAppStore.getState();
+      const { refreshToken, accessToken } = useAuthStore.getState();
       
       // 토큰이 있는 경우에만 재발급 시도
       if (accessToken) {
@@ -44,14 +44,13 @@ axiosInstance.interceptors.response.use(
           
           if (success) {
             // 새로운 토큰으로 원래 요청 재시도
-            const { accessToken: newToken } = useAppStore.getState();
+            const { accessToken: newToken } = useAuthStore.getState();
             if (newToken) {
               originalRequest.headers.Authorization = `Bearer ${newToken}`;
               return axiosInstance(originalRequest);
             }
           }
         } catch (refreshError) {
-          console.error('Token refresh failed:', refreshError);
           // 토큰 갱신 실패 시 로그인 페이지로 리다이렉트
           window.location.href = '/login';
           return Promise.reject(refreshError);

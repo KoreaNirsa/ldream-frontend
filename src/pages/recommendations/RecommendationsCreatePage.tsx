@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
 import RecommendationForm from '@/components/RecommendationForm';
 
@@ -49,7 +49,6 @@ const RecommendationsCreatePage = () => {
         }}
         onSubmit={() => {
           // 추천 생성 로직
-          console.log('Recommendation created');
           navigate('/recommendations/list');
           // 스크롤을 상단으로 이동
           window.scrollTo(0, 0);

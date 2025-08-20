@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SharedMemories from '@/components/shared-memories/SharedMemories';
 import MemoryDetail from '@/components/memories/MemoryDetail';
@@ -326,7 +326,7 @@ const SharedMemoriesPage = () => {
             </div>
           )}
           isLoggedIn={true}
-          onLoginClick={() => console.log('Login clicked')}
+          onLoginClick={() => {}}
           onMemoryClick={(memory) => {
             setSelectedMemoryForDetail(memory);
             setShowMemoryDetail(true);

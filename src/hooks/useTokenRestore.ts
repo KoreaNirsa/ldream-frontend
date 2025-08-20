@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { useAppStore } from '@/types/store';
+import { useAuthStore } from '@/store';
 
 export const useTokenRestore = () => {
-  const { setAccessToken, refreshToken, logout, loginWithToken } = useAppStore();
+  const { setAccessToken, refreshToken, logout, loginWithToken } = useAuthStore();
 
   useEffect(() => {
     const restoreToken = async () => {
@@ -20,8 +20,6 @@ export const useTokenRestore = () => {
         
         // 토큰이 만료되었거나 5분 이내에 만료될 예정인 경우
         if (now >= expiresAt || (expiresAt - now) < 5 * 60 * 1000) {
-          console.log('Token expired or expiring soon, attempting refresh...');
-          
           try {
             const success = await refreshToken();
             if (!success) {
@@ -31,7 +29,6 @@ export const useTokenRestore = () => {
               logout();
             }
           } catch (error) {
-            console.error('Token refresh failed:', error);
             localStorage.removeItem('accessToken');
             localStorage.removeItem('tokenExpiresAt');
             logout();

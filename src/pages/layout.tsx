@@ -3,7 +3,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@/components/theme-provider';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { useAppStore } from '@/types/store';
+import { useAuthStore } from '@/store';
 import axiosInstance from '@/config/axios';
 import { useMemberProfile } from '@/hooks/useMemberProfile';
 import {
@@ -38,7 +38,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout, currentUser, accessToken } = useAppStore();
+  const { logout, currentUser, accessToken } = useAuthStore();
   // JWT 존재 여부로 인증 상태 결정 (토큰이 있을 때만 프로필 정보 노출)
   const isAuthenticated = useMemo(() => Boolean(accessToken), [accessToken]);
   const [isPartnerConnected] = useState(true);
@@ -47,9 +47,7 @@ const Layout = () => {
   // API에서 회원 프로필 데이터 가져오기
   const { data: memberProfile, isLoading: isProfileLoading } = useMemberProfile();
 
-  // 디버깅을 위한 콘솔 로그
-  console.log('Layout - memberProfile:', memberProfile);
-  console.log('Layout - isProfileLoading:', isProfileLoading);
+
 
   // 로그아웃 함수
   const handleLogout = async () => {
@@ -57,8 +55,6 @@ const Layout = () => {
       // GET 요청으로 변경 (axios 인스턴스가 자동으로 토큰 추가)
       await axiosInstance.get('/api/auth/logout');
 
-      console.log('Logout successful');
-      
       // zustand store 상태 업데이트 (로컬 상태 제거)
       logout();
       
@@ -70,17 +66,12 @@ const Layout = () => {
       // 로그인 페이지로 이동
       navigate('/login');
     } catch (error: any) {
-      console.error('Logout error:', error);
-      
       if (error.response) {
         // 서버에서 응답이 왔지만 에러인 경우
-        console.error('Logout failed:', error.response.data);
       } else if (error.request) {
         // 요청은 보냈지만 응답을 받지 못한 경우
-        console.error('Server connection failed');
       } else {
         // 요청 자체를 보내지 못한 경우
-        console.error('Logout request failed');
       }
       
       // 에러가 발생해도 상태 정리
@@ -135,11 +126,7 @@ const Layout = () => {
   const aiRecommendation = memberProfile?.aiRecommendation ?? testData.aiRecommendation;
   const tier = memberProfile?.tier ?? testData.tier;
 
-  // 디버깅을 위한 콘솔 로그
-  console.log('Layout - totalMileage:', totalMileage);
-  console.log('Layout - memoryCount:', memoryCount);
-  console.log('Layout - aiRecommendation:', aiRecommendation);
-  console.log('Layout - tier:', memberProfile?.tier);
+
 
   const navigation = [
     { name: '대시보드', path: '/', icon: '🏠' },
@@ -387,8 +374,8 @@ const Layout = () => {
               <p className="text-pink-100">
                 {isAuthenticated
                   ? memberProfile?.partnerNickname 
-                    ? `${memberProfile.partnerNickname}님과 함께 오늘도 특별한 데이트를 계획해보세요 💕`
-                    : "커플, 친구 또는 가족과 인연을 맺어 특별한 데이트를 계획해보세요 💕"
+                    ? `${memberProfile.partnerNickname}님과 함께 오늘도 특별한 데이트를 계획해보세요.`
+                    : "커플, 친구 또는 가족과 인연을 맺어 특별한 데이트를 계획해보세요."
                   : "로그인하고 특별한 데이트를 계획해보세요!"}
               </p>
               {isAuthenticated && (

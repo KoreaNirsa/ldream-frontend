@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfileEdit from '@/components/profile/ProfileEdit';
 import { useMemberProfile } from '@/hooks/useMemberProfile';
@@ -34,7 +34,6 @@ const ProfileEditPage = () => {
         profile={profile}
         onSave={(updatedProfile) => {
           // 프로필 저장 로직
-          console.log('Profile saved:', updatedProfile);
           navigate('/profile/list');
         }}
         onCancel={() => {

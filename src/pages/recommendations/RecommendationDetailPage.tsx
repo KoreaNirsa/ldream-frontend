@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,12 +21,12 @@ import {
   Utensils,
   Star
 } from 'lucide-react';
-import { useAppStore } from '@/types/store';
+import { useRecommendationStore } from '@/store';
 
 const RecommendationDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { recommendations } = useAppStore();
+  const { recommendations } = useRecommendationStore();
   
   // 추천 데이터 찾기
   const recommendation = recommendations.find(r => r.id === Number(id));

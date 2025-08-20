@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
 import { Checkbox } from "@/components/ui/checkbox"
 import { X } from "lucide-react"
 
@@ -73,12 +73,6 @@ const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({ isOpen, onClose, 
 
   const handleComplete = () => {
     // 프로필 설정 완료 로직
-    console.log("프로필 설정 완료:", {
-      interests,
-      foodPreferences,
-      preferredDateTypes,
-      preferredDays
-    })
     onComplete()
   }
 

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useNavigate, useParams } from 'react-router-dom';
 import MemoryDelete from '@/components/memories/MemoryDelete';
 
@@ -94,7 +94,6 @@ const MemoriesDeletePage = () => {
         }}
         onConfirm={() => {
           // 삭제 로직
-          console.log('Memory deleted:', id);
           navigate('/memories/list');
         }}
       />

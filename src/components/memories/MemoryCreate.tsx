@@ -5,9 +5,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
+
 import { Badge } from "@/components/ui/badge"
-import { Camera, MapPin, Calendar, Tag, Globe, Lock, X, Plus } from "lucide-react"
+import { Camera, MapPin, Globe, Lock, X } from "lucide-react"
 
 interface MemoryCreateProps {
   onBack: () => void
@@ -62,14 +62,14 @@ const MemoryCreate: React.FC<MemoryCreateProps> = ({
   const handleRemoveTag = (tagToRemove: string) => {
     setFormData(prev => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter((tag: string) => tag !== tagToRemove)
     }))
   }
 
   const handleRemovePhoto = (photoToRemove: string) => {
     setFormData(prev => ({
       ...prev,
-      photos: prev.photos.filter(photo => photo !== photoToRemove)
+      photos: prev.photos.filter((photo: string) => photo !== photoToRemove)
     }))
   }
 
@@ -201,7 +201,7 @@ const MemoryCreate: React.FC<MemoryCreateProps> = ({
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
               />
               <div className="flex flex-wrap gap-1">
-                {formData.tags.map((tag, index) => (
+                {formData.tags.map((tag: string, index: number) => (
                   <Badge key={index} variant="secondary" className="flex items-center gap-1">
                     {tag}
                     <button
@@ -406,7 +406,7 @@ const MemoryCreate: React.FC<MemoryCreateProps> = ({
             </div>
             {formData.photos.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                {formData.photos.map((photo, index) => (
+                {formData.photos.map((photo: string, index: number) => (
                   <div key={index} className="relative group">
                     <img 
                       src={photo} 
@@ -435,7 +435,6 @@ const MemoryCreate: React.FC<MemoryCreateProps> = ({
                   type="button"
                   onClick={() => {
                     const newValue = !formData.isPublic;
-                    console.log('Current isPublic:', formData.isPublic, 'New value:', newValue);
                     handleInputChange("isPublic", newValue);
                   }}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${

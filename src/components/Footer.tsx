@@ -1,5 +1,5 @@
 import React from "react"
-import { Heart, MessageCircle, Instagram, Facebook, Twitter, Mail, Phone, MapPin } from "lucide-react"
+import { Heart, Instagram, Facebook, Twitter, Mail, Phone, MapPin } from "lucide-react"
 
 const Footer: React.FC = () => {
   return (

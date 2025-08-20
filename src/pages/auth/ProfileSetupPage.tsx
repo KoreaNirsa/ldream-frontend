@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+
+
 import { Separator } from '@/components/ui/separator';
 import { Heart, Calendar, MapPin, Coffee, Music, Camera, Book, Gamepad, Utensils } from 'lucide-react';
 import axios from 'axios';
@@ -219,11 +219,9 @@ const ProfileSetupPage = () => {
         },
       });
       
-      console.log('Profile setup success:', response.data);
       setShowSuccessMessage(true);
       
     } catch (error: any) {
-      console.error('Profile setup error:', error);
       
       // 에러 메시지 설정
       if (error.response) {

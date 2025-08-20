@@ -24,7 +24,6 @@ const PartnerProfile: React.FC<PartnerProfileProps> = ({ partnerProfile, profile
 
   const handleConnectionRequest = () => {
     // 인연 요청 로직 구현
-    console.log("인연 요청 전송:", searchId, "관계:", relationshipType)
     setIsSearchDialogOpen(false)
     setSearchId("")
     setRelationshipType("커플")

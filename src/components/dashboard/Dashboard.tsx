@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Cloud, MapPin, Heart, Calendar, TrendingUp, Sparkles, Camera, Gift, Droplets, CloudRain, Crown } from "lucide-react"
+import { getWeatherRecommendation } from "@/hooks/useWeather"
 
 interface DashboardProps {
   weather: any
@@ -17,14 +18,15 @@ interface DashboardProps {
   isWeatherLoading?: boolean
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ weather, profile, partnerProfile, userSubscription, memories, isPartnerConnected, isLoggedIn, onLoginClick }) => {
+const Dashboard: React.FC<DashboardProps> = ({ weather, profile, memories, isPartnerConnected, isLoggedIn, onLoginClick }) => {
   // 기본값 설정 (원본 데이터로 복원)
   const defaultWeather = {
     temp: 18,
     condition: "맑음",
     humidity: 45,
-    rainChance: 0,
-    dust: "좋음"
+    rainChance: 15, // 더 현실적인 기본 강수확률
+    dust: "좋음",
+    uvIndex: "보통" // 기본 자외선 지수
   };
 
   const defaultProfile = {
@@ -102,13 +104,24 @@ const Dashboard: React.FC<DashboardProps> = ({ weather, profile, partnerProfile,
                 </div>
                 <div className="flex items-center gap-1">
                   <CloudRain className="h-3 w-3" />
-                  {safeWeather.condition} / 강수확률: {safeWeather.rainChance}%
+                  강수확률: {safeWeather.rainChance}%
                 </div>
               </div>
-              <div className="text-sm text-blue-600">
-                미세먼지: <span className="font-semibold text-green-600">{safeWeather.dust}</span>
+              <div className="grid grid-cols-2 gap-2 text-sm text-blue-600">
+                <div>
+                  미세먼지: <span className="font-semibold text-green-600">{safeWeather.dust}</span>
+                </div>
+                <div>
+                  자외선: <span className={`font-semibold ${
+                    safeWeather.uvIndex === '낮음' ? 'text-green-600' :
+                    safeWeather.uvIndex === '보통' ? 'text-yellow-600' :
+                    safeWeather.uvIndex === '높음' ? 'text-orange-600' :
+                    safeWeather.uvIndex === '매우높음' ? 'text-red-600' :
+                    'text-purple-600'
+                  }`}>{safeWeather.uvIndex}</span>
+                </div>
               </div>
-              <p className="text-sm text-blue-600">🌤️ 야외 데이트하기 좋은 날씨예요!</p>
+              <p className="text-sm text-blue-600">{getWeatherRecommendation(safeWeather)}</p>
             </div>
           </CardContent>
         </Card>

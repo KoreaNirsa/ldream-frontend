@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PartnerProfile from '@/components/profile/PartnerProfile';
 import { useMemberProfile } from '@/hooks/useMemberProfile';

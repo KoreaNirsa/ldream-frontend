@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Recommendations from '../../components/recommendations/Recommendations';
 
@@ -54,7 +54,7 @@ const RecommendationsListPage = () => {
         setRecommendationPage={setCurrentPage}
         itemsPerPage={itemsPerPage}
         isLoggedIn={true}
-        onLoginClick={() => console.log('Login clicked')}
+        onLoginClick={() => {}}
       />
     </div>
   );

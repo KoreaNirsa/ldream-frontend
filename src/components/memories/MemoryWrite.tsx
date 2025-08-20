@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { useAppStore } from "@/types/store"
+import { useMemoryStore } from "@/store"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -13,8 +13,8 @@ import {
   Star,
   ArrowLeft,
   Save,
-  Tag,
-  ImageIcon,
+
+
   Bold,
   Italic,
   Underline,
@@ -31,7 +31,6 @@ const MemoryWrite: React.FC<MemoryWriteProps> = ({ onBack, onSave, defaultPrivat
   const {
     editingMemory,
     selectedMemory,
-    memories,
     selectedRating,
     tags,
     tagInput,
@@ -47,7 +46,7 @@ const MemoryWrite: React.FC<MemoryWriteProps> = ({ onBack, onSave, defaultPrivat
     setExistingPhotos,
     addUploadedFile,
     removeUploadedFile,
-  } = useAppStore()
+  } = useMemoryStore()
 
   const [title, setTitle] = React.useState("")
   const [date, setDate] = React.useState("")

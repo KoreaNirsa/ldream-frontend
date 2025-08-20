@@ -7,15 +7,15 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { Eye, EyeOff, Mail, Lock, Heart } from 'lucide-react';
-import { useAppStore } from '@/types/store';
+import { useAuthStore } from '@/store';
 import axiosInstance from '@/config/axios';
-import { queryClient } from '@/queryClient';
+import { queryClient } from '@/lib/react-query';
 import { getMemberProfile } from '@/hooks/useMemberProfile';
 import { decodeJwtPayload } from '@/config/utils';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { loginWithToken } = useAppStore();
+  const { loginWithToken } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState('');
@@ -34,17 +34,10 @@ const LoginPage = () => {
         rememberMe
       });
 
-      console.log('Login successful:', response.data);
-      
       // JWT 토큰을 zustand에 저장 (닉네임 기준)
       if (response.data.accessToken) {
         // API 응답에서 myNickname을 우선적으로 사용, 없으면 기존 로직 사용
         const userNickname = response.data.myNickname || response.data.user?.nickname || response.data.nickname || email;
-        
-        // 디버깅을 위한 로그
-        console.log('Login - accessToken:', response.data.accessToken);
-        console.log('Login - expiresIn:', response.data.expiresIn);
-        console.log('Login - userNickname:', userNickname);
         
         loginWithToken(userNickname, response.data.accessToken, response.data.expiresIn);
         
@@ -54,14 +47,11 @@ const LoginPage = () => {
         if (response.data.expiresIn) {
           const expiresAt = Date.now() + response.data.expiresIn;
           localStorage.setItem('tokenExpiresAt', expiresAt.toString());
-          console.log('Login - expiresAt:', expiresAt);
         }
 
         // JWT의 subject(memberId) 기반으로 회원 프로필 프리페치 (5분 캐시)
         const payload = decodeJwtPayload<{ sub?: string | number }>(response.data.accessToken);
         const memberId = payload?.sub;
-        console.log('Login - JWT payload:', payload);
-        console.log('Login - memberId:', memberId);
         
         if (memberId) {
           queryClient.prefetchQuery({
@@ -74,11 +64,8 @@ const LoginPage = () => {
       // 대시보드로 이동
       navigate('/dashboard');
               } catch (error: any) {
-      console.error('Login error:', error);
-      
       if (error.response) {
         // 서버에서 응답이 왔지만 에러인 경우
-        console.error('Login failed:', error.response.data);
         alert('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
       } else if (error.request) {
         // 요청은 보냈지만 응답을 받지 못한 경우
@@ -93,7 +80,6 @@ const LoginPage = () => {
     };
 
   const handleSocialLogin = (provider: string) => {
-    console.log(`${provider} 로그인 시도`);
     // 소셜 로그인 로직 구현
   };
 

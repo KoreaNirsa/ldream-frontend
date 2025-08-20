@@ -28,8 +28,8 @@ import {
   CheckCircle
 } from 'lucide-react';
 import RecommendationForm from '@/components/RecommendationForm';
-import { useAppStore } from '@/types/store';
-import { Recommendation, Profile } from '@/schemas/types';
+import { useRecommendationStore } from '@/store';
+import { Recommendation, Profile } from '@/types';
 
 interface RecommendationsProps {
   showRecommendationForm: boolean;
@@ -57,7 +57,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({
   onLoginClick
 }) => {
   const navigate = useNavigate();
-  const { recommendations, updateRecommendation } = useAppStore();
+  const { recommendations, updateRecommendation } = useRecommendationStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedLocation, setSelectedLocation] = useState('all');

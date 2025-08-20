@@ -1,11 +1,11 @@
 import React, { useState } from "react"
-import { useAppStore } from "@/types/store"
-import { Memory } from "@/schemas/types"
+import { useUIStore } from "@/store"
+import { Memory } from "@/types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Input } from "@/components/ui/input"
+
 import { Textarea } from "@/components/ui/textarea"
 import {
   Heart,
@@ -14,14 +14,14 @@ import {
   Edit,
   Trash2,
   Reply,
-  MoreHorizontal,
+
   ArrowLeft,
   Star,
   MapPin,
   Calendar,
   Cloud,
-  Tag,
-  X,
+
+
   ExternalLink,
   MessageSquare,
   ChevronLeft,
@@ -58,13 +58,14 @@ const MemoryDetail: React.FC<MemoryDetailProps> = ({
   onEdit,
   onDelete,
 }) => {
+
+  
   const {
-    isLoggedIn,
     showReplyInput,
     setShowReplyInput,
-    handleLike,
-    likedMemories,
-  } = useAppStore()
+  } = useUIStore()
+  
+
 
   const [replyText, setReplyText] = React.useState("")
   const [commentText, setCommentText] = React.useState("")
@@ -100,12 +101,6 @@ const MemoryDetail: React.FC<MemoryDetailProps> = ({
 
   // 사용할 이미지 배열 (테스트를 위해 항상 샘플 이미지 사용)
   const images = sampleImages
-  
-  // 디버깅용 로그
-  console.log('Memory photos:', memory.photos);
-  console.log('Sample images count:', sampleImages.length);
-  console.log('Final images count:', images.length);
-  console.log('Current image index:', currentImageIndex);
 
   // 샘플 댓글 데이터
   const sampleComments = [
@@ -301,7 +296,6 @@ const MemoryDetail: React.FC<MemoryDetailProps> = ({
                 <>
                   <button
                     onClick={() => {
-                      console.log('이전 버튼 클릭');
                       setCurrentImageIndex(currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1);
                     }}
                     className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all z-10"
@@ -310,7 +304,6 @@ const MemoryDetail: React.FC<MemoryDetailProps> = ({
                   </button>
                   <button
                     onClick={() => {
-                      console.log('다음 버튼 클릭');
                       setCurrentImageIndex(currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1);
                     }}
                     className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all z-10"
@@ -333,7 +326,6 @@ const MemoryDetail: React.FC<MemoryDetailProps> = ({
                   <button
                     key={index}
                     onClick={() => {
-                      console.log('썸네일 클릭:', index);
                       setCurrentImageIndex(index);
                     }}
                     className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
@@ -377,16 +369,10 @@ const MemoryDetail: React.FC<MemoryDetailProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
-                    console.log('좋아요 버튼 클릭됨');
-                    console.log('현재 isLiked:', isLiked);
-                    console.log('현재 likeCount:', likeCount);
-                    
                     if (isLiked) {
-                      console.log('좋아요 취소');
                       setIsLiked(false);
                       setLikeCount(likeCount - 1);
                     } else {
-                      console.log('좋아요 추가');
                       setIsLiked(true);
                       setLikeCount(likeCount + 1);
                     }

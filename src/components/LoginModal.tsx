@@ -38,7 +38,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, defau
 
   const handleLogin = () => {
     if (loginEmail === "user" && loginPassword === "qwer1234!") {
-      console.log("로그인 성공")
       localStorage.setItem("isLoggedIn", "true")
       localStorage.setItem("currentUser", JSON.stringify({ email: loginEmail, name: "사용자" }))
       onLogin(loginEmail, loginPassword)
@@ -78,7 +77,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, defau
       return
     }
     
-    console.log("회원가입 성공")
     alert("회원가입이 완료되었습니다!")
     setShowProfileSetup(true)
   }

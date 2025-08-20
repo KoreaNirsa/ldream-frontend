@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import AIChat from '@/components/chat/AIChat';
 
 const ChatPage = () => {
@@ -41,7 +41,6 @@ const ChatPage = () => {
         userSubscription={defaultUserSubscription}
         handleChatFeedback={(messageIndex, isPositive) => {
           // 피드백 처리 로직
-          console.log(`Message ${messageIndex} feedback: ${isPositive ? 'positive' : 'negative'}`);
         }}
         handleQuickChat={(msg) => {
           // 빠른 채팅 처리 로직
@@ -62,7 +61,7 @@ const ChatPage = () => {
         isLoggedIn={true}
         guestChatCount={0}
         setGuestChatCount={() => {}}
-        onLoginClick={() => console.log('Login clicked')}
+        onLoginClick={() => {}}
       />
     </div>
   );

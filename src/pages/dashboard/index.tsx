@@ -1,20 +1,14 @@
-import React from 'react';
+
 import Dashboard from '@/components/dashboard/Dashboard';
 import { useMemberProfile } from '@/hooks/useMemberProfile';
 import { useWeather } from '@/hooks/useWeather';
 
 const DashboardPage = () => {
-  console.log('=== DashboardPage rendered ===');
-  
   // API에서 회원 프로필 데이터 가져오기
   const { data: memberProfile } = useMemberProfile();
   
   // 실제 날씨 데이터 가져오기
   const { data: weatherData, isLoading: isWeatherLoading, error: weatherError } = useWeather();
-  
-  console.log('DashboardPage - weatherData:', weatherData);
-  console.log('DashboardPage - isWeatherLoading:', isWeatherLoading);
-  console.log('DashboardPage - weatherError:', weatherError);
 
   // 기본 데이터 설정
   const defaultWeather = {
@@ -27,8 +21,6 @@ const DashboardPage = () => {
 
   // 실제 날씨 데이터 또는 기본값 사용
   const weather = weatherData || defaultWeather;
-  
-  console.log('DashboardPage - final weather:', weather);
 
   const defaultProfile = {
     nickname: memberProfile?.myNickname || "사랑스러운 사용자",
@@ -127,7 +119,7 @@ const DashboardPage = () => {
         memories={defaultMemories}
         isPartnerConnected={Boolean(memberProfile?.partnerNickname)}
         isLoggedIn={true}
-        onLoginClick={() => console.log('Login clicked')}
+        onLoginClick={() => {}}
         isWeatherLoading={isWeatherLoading}
       />
     </div>

@@ -3,8 +3,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Progress } from "@/components/ui/progress"
-import { MessageCircle, ThumbsUp, ThumbsDown, Send } from "lucide-react"
+
+import { MessageCircle, ThumbsUp, ThumbsDown } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 type ChatMessage =

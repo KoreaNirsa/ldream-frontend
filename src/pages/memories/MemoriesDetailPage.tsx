@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import MemoryDetail from '@/components/memories/MemoryDetail';
 
@@ -111,7 +111,6 @@ const MemoriesDetailPage = () => {
         }}
         onDelete={() => {
           // 삭제 로직
-          console.log('Memory deleted:', id);
           navigate(-1);
         }}
       />

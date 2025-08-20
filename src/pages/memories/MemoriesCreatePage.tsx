@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
 import MemoryCreate from '@/components/memories/MemoryCreate';
 
@@ -27,7 +27,6 @@ const MemoriesCreatePage = () => {
         }}
         onSave={(memoryData) => {
           // 메모리 저장 로직
-          console.log('Memory saved:', memoryData);
           navigate('/memories');
           // 스크롤을 상단으로 이동
           window.scrollTo(0, 0);

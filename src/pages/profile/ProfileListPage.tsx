@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Profile from '@/components/profile/Profile';
 import { useMemberProfile } from '@/hooks/useMemberProfile';
@@ -9,7 +9,6 @@ const ProfileListPage = () => {
   const { data: memberProfile } = useMemberProfile();
 
   useEffect(() => {
-    console.log('ProfileListPage loaded');
   }, []);
 
   const [profile, setProfile] = useState({

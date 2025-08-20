@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter } from '@/components/ui/alert-dialog';
-import { History, Activity, CreditCard, Calendar, Camera, Sparkles, Heart, Share, MessageSquare, FileText, Users, Star, Coins, ArrowUpRight } from 'lucide-react';
+import { Activity, CreditCard, Camera, Sparkles, Heart, Share, MessageSquare, FileText, Users, Coins, ArrowUpRight } from 'lucide-react';
 
 const HistoryPage = () => {
   const location = useLocation();
@@ -140,7 +140,6 @@ const HistoryPage = () => {
 
   const handleAcceptConnection = () => {
     // 인연 요청 승인 로직
-    console.log("인연 요청 승인")
     setHasConnectionRequest(false)
     setShowAcceptDialog(true)
   };
@@ -152,7 +151,6 @@ const HistoryPage = () => {
 
   const handleConfirmReject = () => {
     // 인연 요청 거절 로직
-    console.log("인연 요청 거절")
     setHasConnectionRequest(false)
     setShowRejectConfirmDialog(false)
     setShowRejectSuccessDialog(true)

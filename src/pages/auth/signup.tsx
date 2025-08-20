@@ -7,55 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { Eye, EyeOff, Mail, Lock, User, Heart, Calendar, CheckCircle, Clock } from 'lucide-react';
-import { useAppStore } from '@/types/store';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { useAuthStore } from '@/store';
+import { useForm, zodResolver } from '@/lib/react-hook-form';
+import { signupSchema, getMaxBirthDate, SignupFormData } from '@/schemas';
 import axios from 'axios';
-
-// 14세 이상 생년월일 계산 함수
-const getMaxBirthDate = () => {
-  const today = new Date();
-  const maxDate = new Date(today.getFullYear() - 14, today.getMonth(), today.getDate());
-  return maxDate.toISOString().split('T')[0];
-};
-
-// 14세 이상 검증 함수
-const isOver14YearsOld = (birthDate: string) => {
-  if (!birthDate) return false;
-  
-  const today = new Date();
-  const birth = new Date(birthDate);
-  const age = today.getFullYear() - birth.getFullYear();
-  const monthDiff = today.getMonth() - birth.getMonth();
-  
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-    return age - 1 >= 14;
-  }
-  
-  return age >= 14;
-};
-
-// 폼 스키마 정의
-const signupSchema = z.object({
-  email: z.string().email('올바른 이메일 주소를 입력해주세요'),
-  name: z.string().min(1, '이름을 입력해주세요').regex(/^[가-힣]+$/, '이름은 한글만 입력 가능합니다'),
-  nickname: z.string().min(1, '별명을 입력해주세요').regex(/^[a-zA-Z0-9가-힣]+$/, '별명은 영어, 한글, 숫자만 입력 가능합니다'),
-  birthDate: z.string().min(1, '생년월일을 선택해주세요'),
-  gender: z.string().min(1, '성별을 선택해주세요'),
-  password: z.string()
-    .min(8, '비밀번호는 8자 이상이어야 합니다')
-    .regex(/^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/, '비밀번호는 특수문자, 대/소문자 영어, 숫자를 포함해야 합니다'),
-  confirmPassword: z.string().min(1, '비밀번호 확인을 입력해주세요')
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "비밀번호가 일치하지 않습니다",
-  path: ["confirmPassword"],
-}).refine((data) => isOver14YearsOld(data.birthDate), {
-  message: "만 14세 이상만 가입 가능합니다",
-  path: ["birthDate"],
-});
-
-type SignupFormData = z.infer<typeof signupSchema>;
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -93,7 +48,7 @@ const SignupPage = () => {
     setSignupPassword,
     setSignupConfirmPassword,
     setSignupNickname,
-  } = useAppStore();
+  } = useAuthStore();
 
   // react-hook-form 설정
   const {
@@ -139,14 +94,11 @@ const SignupPage = () => {
         },
       });
       
-      console.log('Email verification code sent:', response.data);
-      
       setShowVerificationInput(true);
       setVerificationTimer(300); // 5분 = 300초
       setVerificationError('');
       
          } catch (error: any) {
-       console.error('Email verification error:', error);
        
        if (error.response) {
          const errorCode = error.response.data.code;
@@ -193,8 +145,6 @@ const SignupPage = () => {
         },
       });
       
-      console.log('Email verification success:', response.data);
-      
       // 성공 시 인증 완료 처리
       if (response.data.code === 'SUCCESS') {
         setIsEmailVerified(true);
@@ -204,7 +154,6 @@ const SignupPage = () => {
       }
       
     } catch (error: any) {
-      console.error('Email verification error:', error);
       
       if (error.response) {
         const errorCode = error.response.data.code;
@@ -306,8 +255,6 @@ const SignupPage = () => {
         },
       });
       
-      console.log('Signup success:', response.data);
-      
       // memberId 추출
       const memberId = response.data.result;
       
@@ -315,7 +262,6 @@ const SignupPage = () => {
       navigate('/profile-setup', { state: { memberId, from: '/signup' } });
       
     } catch (error: any) {
-      console.error('Signup error:', error);
       
       // 에러 메시지 설정
       if (error.response) {
@@ -366,7 +312,6 @@ const SignupPage = () => {
   };
 
   const handleSocialSignup = (provider: string) => {
-    console.log(`${provider} 회원가입 시도`);
     // 소셜 회원가입 로직 구현
   };
 

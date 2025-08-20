@@ -1,5 +1,5 @@
 import React from "react"
-import { useAppStore } from "@/types/store"
+import { useRecommendationStore } from "@/store"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Sparkles, Calendar, MapPin, Users, ArrowLeft } from "lucide-react"
+import { Sparkles, Users, ArrowLeft } from "lucide-react"
 
 interface RecommendationFormProps {
   onClose: () => void
@@ -24,7 +24,7 @@ const RecommendationForm: React.FC<RecommendationFormProps> = ({ onClose, onSubm
     isPartnerConnected,
     setCurrentTab,
     addRecommendation,
-  } = useAppStore()
+  } = useRecommendationStore()
 
   const [startDate, setStartDate] = React.useState("")
   const [endDate, setEndDate] = React.useState("")
@@ -41,7 +41,7 @@ const RecommendationForm: React.FC<RecommendationFormProps> = ({ onClose, onSubm
   const [manualMood, setManualMood] = React.useState("")
   const [manualRelationshipStatus, setManualRelationshipStatus] = React.useState("")
   const [manualDietary, setManualDietary] = React.useState("")
-  const [manualSpecialDay, setManualSpecialDay] = React.useState("")
+
   const [manualAgeGroup, setManualAgeGroup] = React.useState("")
   const [manualMbti, setManualMbti] = React.useState("")
   const [showBudgetInput, setShowBudgetInput] = React.useState(false)
