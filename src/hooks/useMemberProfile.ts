@@ -10,11 +10,18 @@ import {
   ProfileDaysData, 
   ProfileTransportationData, 
   ProfileDateMoodData,
-  MemberRelationData 
+  MemberRelationData,
+  ProfileResponse
 } from '@/types/profile';
 
 export const getMemberProfile = async (memberId: string | number) => {
   const { data } = await axiosInstance.get(`/api/member/${memberId}`);
+  return data;
+};
+
+// 새로운 API 응답 구조에 맞는 함수
+export const getProfileData = async (memberId: string | number): Promise<ProfileResponse> => {
+  const { data } = await axiosInstance.get(`/api/member/profile/${memberId}`);
   return data;
 };
 
@@ -113,6 +120,21 @@ export const useDetailedProfile = () => {
   return useQuery({
     queryKey: ['detailed-profile', memberId],
     queryFn: () => getDetailedProfile(memberId as string | number),
+    enabled: Boolean(memberId),
+    staleTime: 5 * 60 * 1000, // 5분간 캐시
+    gcTime: 10 * 60 * 1000, // 10분간 캐시 유지
+  });
+};
+
+// 새로운 API 응답 구조에 맞는 훅
+export const useProfileData = () => {
+  const { accessToken } = useAuthStore();
+  const payload = decodeJwtPayload<{ sub?: string | number }>(accessToken);
+  const memberId = payload?.sub;
+
+  return useQuery({
+    queryKey: ['profile-data', memberId],
+    queryFn: () => getProfileData(memberId as string | number),
     enabled: Boolean(memberId),
     staleTime: 5 * 60 * 1000, // 5분간 캐시
     gcTime: 10 * 60 * 1000, // 10분간 캐시 유지

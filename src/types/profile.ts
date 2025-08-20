@@ -35,6 +35,28 @@ export interface MemberProfile {
   [key: string]: any;
 }
 
+// 새로운 API 응답 구조에 맞는 타입
+export interface ProfileResponse {
+  code: string;
+  message: string;
+  result: {
+    name: string;
+    nickname: string;
+    birthDate: string;
+    gender: string;
+    mbti: string;
+    interests: string[];
+    preferredDays: string[];
+    preferredRegion: string;
+    preferredTime: string;
+    preferredBudget: string;
+    transportation: string[];
+    dateMood: string[];
+    relationshipStatus: string;
+    foodTypes: string[];
+  };
+}
+
 // 데이터베이스 스키마에 맞춘 상세 프로필 타입
 export interface DetailedProfileResponse {
   // 기본 정보

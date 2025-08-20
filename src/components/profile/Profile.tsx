@@ -110,7 +110,7 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
   const transportationOptions: { value: Transportation; label: string }[] = [
     { value: '대중교통', label: '🚈 대중교통' },
     { value: '자동차', label: '🚗 자동차' },
-    { value: '도보', label: '�� 도보' },
+    { value: '도보', label: '🚶 도보' },
     { value: '자전거', label: '🚲 자전거' },
     { value: '택시', label: '🚕 택시' }
   ]
@@ -141,28 +141,28 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
                 <AvatarImage src="/placeholder.svg?height=80&width=80" />
                 <AvatarFallback className="bg-pink-100 text-2xl">💖</AvatarFallback>
               </Avatar>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" disabled>
                 사진 업로드
               </Button>
             </div>
             <div className="space-y-3">
               <div className="space-y-2">
                 <Label>이름</Label>
-                <Input defaultValue={profile.name} />
+                <Input value={profile.name || ""} readOnly className="bg-gray-50" />
               </div>
               <div className="space-y-2">
                 <Label>애칭 (별명)</Label>
-                <Input defaultValue={profile.nickname} placeholder="상대방이 부를 별명을 입력하세요" />
+                <Input value={profile.nickname || ""} readOnly className="bg-gray-50" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>생년월일</Label>
-                  <Input type="date" defaultValue={profile.birthDate} />
+                  <Input type="date" value={profile.birthDate || ""} readOnly className="bg-gray-50" />
                 </div>
                 <div className="space-y-2">
                   <Label>나이대</Label>
                   <Input 
-                    value={calculateAgeGroup(profile.birthDate)} 
+                    value={calculateAgeGroup(profile.birthDate || "")} 
                     readOnly 
                     className="bg-gray-50"
                   />
@@ -170,8 +170,8 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
               </div>
               <div className="space-y-2">
                 <Label>성별</Label>
-                <Select defaultValue={profile.gender}>
-                  <SelectTrigger>
+                <Select value={profile.gender || ""} disabled>
+                  <SelectTrigger className="bg-gray-50">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -183,8 +183,8 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
             </div>
             <div className="space-y-2">
               <Label>MBTI</Label>
-              <Select defaultValue={profile.mbti}>
-                <SelectTrigger>
+              <Select value={profile.mbti || ""} disabled>
+                <SelectTrigger className="bg-gray-50">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -210,20 +210,8 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
                 <div key={interest.value} className="flex items-center space-x-2">
                   <Checkbox 
                     id={interest.value} 
-                    checked={profile.interests.includes(interest.value)}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setProfile({
-                          ...profile,
-                          interests: [...profile.interests, interest.value],
-                        })
-                      } else {
-                        setProfile({
-                          ...profile,
-                          interests: profile.interests.filter((i: string) => i !== interest.value),
-                        })
-                      }
-                    }}
+                    checked={profile.interests?.includes(interest.value) || false}
+                    disabled
                   />
                   <Label htmlFor={interest.value} className="text-sm">
                     {interest.label}
@@ -238,20 +226,8 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
                   <div key={day.value} className="flex items-center space-x-2">
                     <Checkbox
                       id={day.value}
-                      checked={profile.preferredDays.includes(day.value)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setProfile({
-                            ...profile,
-                            preferredDays: [...profile.preferredDays, day.value],
-                          })
-                        } else {
-                          setProfile({
-                            ...profile,
-                            preferredDays: profile.preferredDays.filter((d: string) => d !== day.value),
-                          })
-                        }
-                      }}
+                      checked={profile.preferredDays?.includes(day.value) || false}
+                      disabled
                     />
                     <Label htmlFor={day.value} className="text-sm">
                       {day.label}
@@ -273,14 +249,19 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
+              <Label>선호 지역</Label>
+              <div className="p-2 bg-blue-50 rounded-lg">
+                <span className="text-sm text-blue-700">📍 {profile.preferredRegion || "설정되지 않음"}</span>
+              </div>
+            </div>
+            <div className="space-y-2">
               <Label>선호 시간대</Label>
               <div className="flex gap-2">
                 {timeOptions.map((time) => (
                   <Badge
                     key={time.value}
                     variant={profile.timePreference === time.value ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => setProfile({ ...profile, timePreference: time.value })}
+                    className="cursor-default"
                   >
                     {time.label}
                   </Badge>
@@ -294,8 +275,7 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
                   <Badge
                     key={budget}
                     variant={profile.budget === budget ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => setProfile({ ...profile, budget: budget })}
+                    className="cursor-default"
                   >
                     💸 {budget}
                   </Badge>
@@ -308,21 +288,8 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
                 {transportationOptions.map((transport) => (
                   <Badge
                     key={transport.value}
-                    variant={profile.transport.includes(transport.value) ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => {
-                      if (profile.transport.includes(transport.value)) {
-                        setProfile({
-                          ...profile,
-                          transport: profile.transport.filter((t: string) => t !== transport.value)
-                        })
-                      } else {
-                        setProfile({
-                          ...profile,
-                          transport: [...profile.transport, transport.value]
-                        })
-                      }
-                    }}
+                    variant={(profile.transport?.includes(transport.value) || false) ? "default" : "outline"}
+                    className="cursor-default"
                   >
                     {transport.label}
                   </Badge>
@@ -346,21 +313,8 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
                 {moodOptions.map((mood) => (
                   <Badge
                     key={mood.value}
-                    variant={profile.mood.includes(mood.value) ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => {
-                      if (profile.mood.includes(mood.value)) {
-                        setProfile({
-                          ...profile,
-                          mood: profile.mood.filter((m: string) => m !== mood.value)
-                        })
-                      } else {
-                        setProfile({
-                          ...profile,
-                          mood: [...profile.mood, mood.value]
-                        })
-                      }
-                    }}
+                    variant={(profile.mood?.includes(mood.value) || false) ? "default" : "outline"}
+                    className="cursor-default"
                   >
                     {mood.label}
                   </Badge>
@@ -374,8 +328,7 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
                   <Badge
                     key={status.value}
                     variant={profile.relationshipStatus === status.value ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => setProfile({ ...profile, relationshipStatus: status.value })}
+                    className="cursor-default"
                   >
                     {status.label}
                   </Badge>
@@ -398,20 +351,8 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
                 <div key={food.value} className="flex items-center space-x-2">
                   <Checkbox 
                     id={food.value} 
-                    checked={profile.dietary?.includes(food.value)}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setProfile({
-                          ...profile,
-                          dietary: [...(profile.dietary || []), food.value],
-                        })
-                      } else {
-                        setProfile({
-                          ...profile,
-                          dietary: (profile.dietary || []).filter((d: string) => d !== food.value),
-                        })
-                      }
-                    }}
+                    checked={profile.dietary?.includes(food.value) || false}
+                    disabled
                   />
                   <Label htmlFor={food.value} className="text-sm">
                     {food.label}
@@ -421,12 +362,12 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
             </div>
           </CardContent>
         </Card>
-        {/* 첫 만남 설정 */}
+        {/* 추가 정보 */}
         <Card className="bg-gradient-to-br from-white to-slate-50 border-slate-200">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-slate-700">
               <Calendar className="h-5 w-5" />
-              첫 만남 설정 💕
+              추가 정보 💕
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -435,17 +376,11 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
                 <span className="text-sm">💕 첫 만남: {profile.firstMeetingDate || "설정되지 않음"}</span>
               </div>
               <div className="flex items-center justify-between p-2 bg-purple-50 rounded-lg">
-                <span className="text-sm">🎂 내 생일: {profile.birthDate}</span>
+                <span className="text-sm">🎂 내 생일: {profile.birthDate || "설정되지 않음"}</span>
               </div>
-            </div>
-            <div className="space-y-2">
-              <Label>첫 만남 날짜 설정</Label>
-              <Input 
-                type="date" 
-                value={profile.firstMeetingDate || ""}
-                onChange={(e) => setProfile({ ...profile, firstMeetingDate: e.target.value })}
-                placeholder="첫 만남 날짜를 선택하세요"
-              />
+              <div className="flex items-center justify-between p-2 bg-blue-50 rounded-lg">
+                <span className="text-sm">📍 선호 지역: {profile.preferredRegion || "설정되지 않음"}</span>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -461,17 +396,17 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-3xl font-bold text-amber-700">{profile.mileage.toLocaleString()}P</div>
+              <div className="text-3xl font-bold text-amber-700">{(profile.mileage || 0).toLocaleString()}P</div>
               <p className="text-sm text-amber-600">내 마일리지</p>
             </div>
             {isPartnerConnected && (
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-700">{partnerProfile.mileage.toLocaleString()}P</div>
+                <div className="text-3xl font-bold text-blue-700">{(partnerProfile.mileage || 0).toLocaleString()}P</div>
                 <p className="text-sm text-blue-600">커플 마일리지</p>
               </div>
             )}
             <div className="text-center">
-              <div className="text-4xl font-bold text-green-700">{totalMileage.toLocaleString()}P</div>
+              <div className="text-4xl font-bold text-green-700">{(totalMileage || 0).toLocaleString()}P</div>
               <p className="text-sm text-green-600">총 사용 가능 마일리지</p>
             </div>
           </div>
@@ -482,8 +417,8 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
               <p className="text-sm text-amber-600">구독 결제 시 마일리지를 자동으로 사용합니다</p>
             </div>
             <Switch
-              checked={profile.autoUseMileage}
-              onCheckedChange={(checked) => setProfile({ ...profile, autoUseMileage: checked })}
+              checked={profile.autoUseMileage || false}
+              disabled
             />
           </div>
           <div className="space-y-2 text-sm border-t pt-4">
@@ -502,14 +437,10 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
           </div>
         </CardContent>
       </Card>
-      <div className="flex justify-between pt-4">
-        <Button variant="destructive" className="bg-red-500 hover:bg-red-600">
+      <div className="flex justify-center pt-4">
+        <Button variant="destructive" className="bg-red-500 hover:bg-red-600" disabled>
           <UserX className="h-4 w-4 mr-2" />
           회원 탈퇴
-        </Button>
-        <Button className="bg-gradient-to-r from-slate-600 to-purple-600 hover:from-slate-700 hover:to-purple-700">
-          <Settings className="h-4 w-4 mr-2" />
-          프로필 저장
         </Button>
       </div>
     </div>

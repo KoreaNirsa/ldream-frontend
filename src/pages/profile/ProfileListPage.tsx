@@ -9,7 +9,8 @@ import {
   useProfileFoods,
   useProfileDays,
   useProfileTransportations,
-  useProfileDateMoods
+  useProfileDateMoods,
+  useProfileData
 } from '@/hooks/useMemberProfile';
 
 const ProfileListPage = () => {
@@ -17,7 +18,9 @@ const ProfileListPage = () => {
   // API에서 회원 프로필 데이터 가져오기
   const { data: memberProfile } = useMemberProfile();
   // 상세 프로필 데이터 가져오기
-  const { data: detailedProfile, isLoading, error } = useDetailedProfile();
+  const { data: detailedProfile } = useDetailedProfile();
+  // 새로운 API 응답 구조에 맞는 프로필 데이터
+  const { data: profileData, isLoading, error } = useProfileData();
   
   // 데이터베이스 스키마에 맞춘 새로운 훅들
   const { data: memberProfileData } = useMemberProfileData();
@@ -30,68 +33,52 @@ const ProfileListPage = () => {
   useEffect(() => {
   }, []);
 
-  // API 데이터를 기반으로 프로필 정보 설정
+  // 새로운 API 응답 데이터를 기반으로 프로필 정보 설정
   const [profile, setProfile] = useState({
-    nickname: detailedProfile?.nickname || memberProfile?.myNickname || "사랑스러운 사용자",
-    interests: profileInterests?.map(interest => interest.category) || detailedProfile?.interests || [],
-    name: detailedProfile?.name || "사용자",
-    birthDate: detailedProfile?.birthDate || "1995-01-01",
-    gender: detailedProfile?.gender || "여성",
-    mbti: memberProfileData?.mbti || detailedProfile?.mbti || "ENFP",
+    nickname: profileData?.result?.nickname || detailedProfile?.nickname || memberProfile?.myNickname || "사랑스러운 사용자",
+    interests: profileData?.result?.interests || profileInterests?.map(interest => interest.category) || detailedProfile?.interests || [],
+    name: profileData?.result?.name || detailedProfile?.name || "사용자",
+    birthDate: profileData?.result?.birthDate || detailedProfile?.birthDate || "1995-01-01",
+    gender: profileData?.result?.gender === 'M' ? '남성' : profileData?.result?.gender === 'F' ? '여성' : detailedProfile?.gender || "여성",
+    mbti: profileData?.result?.mbti || memberProfileData?.mbti || detailedProfile?.mbti || "ENFP",
     mileage: memberProfile?.mileage || 340,
-    preferredDays: profileDays?.map(day => day.preferred_days) || detailedProfile?.preferredDays || [],
-    timePreference: memberProfileData?.preferred_time || detailedProfile?.preferredTimeSlots?.[0] || "",
-    budget: memberProfileData?.preferred_budget || detailedProfile?.preferredBudget || "",
-    transportation: profileTransportations?.map(transport => transport.transportation) || detailedProfile?.transportation || [],
+    preferredDays: profileData?.result?.preferredDays || profileDays?.map(day => day.preferred_days) || detailedProfile?.preferredDays || [],
+    timePreference: profileData?.result?.preferredTime || memberProfileData?.preferred_time || detailedProfile?.preferredTimeSlots?.[0] || "",
+    budget: profileData?.result?.preferredBudget || memberProfileData?.preferred_budget || detailedProfile?.preferredBudget || "",
+    transportation: profileData?.result?.transportation || profileTransportations?.map(transport => transport.transportation) || detailedProfile?.transportation || [],
     activityType: "🎬 영화",
     communicationStyle: "💬 대화",
     relationshipGoals: ["💕 진지한 관계", "🎉 즐거운 데이트"],
-    transport: profileTransportations?.map(transport => transport.transportation) || detailedProfile?.transportation || [],
-    mood: profileDateMoods?.map(mood => mood.date_mood) || detailedProfile?.dateMood || [],
-    relationshipStatus: memberProfileData?.relationship_status || detailedProfile?.relationshipStatus || "",
-    dietary: profileFoods?.map(food => food.food_type) || detailedProfile?.foodPreferences || []
+    transport: profileData?.result?.transportation || profileTransportations?.map(transport => transport.transportation) || detailedProfile?.transportation || [],
+    mood: profileData?.result?.dateMood || profileDateMoods?.map(mood => mood.date_mood) || detailedProfile?.dateMood || [],
+    relationshipStatus: profileData?.result?.relationshipStatus || memberProfileData?.relationship_status || detailedProfile?.relationshipStatus || "",
+    dietary: profileData?.result?.foodTypes || profileFoods?.map(food => food.food_type) || detailedProfile?.foodPreferences || [],
+    preferredRegion: profileData?.result?.preferredRegion || ""
   });
 
-  // API 데이터가 로드되면 프로필 정보 업데이트
+  // 새로운 API 응답 데이터가 로드되면 프로필 정보 업데이트
   useEffect(() => {
-    if (memberProfileData && profileInterests && profileFoods && profileDays && profileTransportations && profileDateMoods) {
+    if (profileData?.result) {
       setProfile(prev => ({
         ...prev,
-        mbti: memberProfileData.mbti || prev.mbti,
-        timePreference: memberProfileData.preferred_time || prev.timePreference,
-        budget: memberProfileData.preferred_budget || prev.budget,
-        relationshipStatus: memberProfileData.relationship_status || prev.relationshipStatus,
-        interests: profileInterests.map(interest => interest.category),
-        foods: profileFoods.map(food => food.food_type),
-        preferredDays: profileDays.map(day => day.preferred_days),
-        transportation: profileTransportations.map(transport => transport.transportation),
-        mood: profileDateMoods.map(mood => mood.date_mood)
+        nickname: profileData.result.nickname || prev.nickname,
+        interests: profileData.result.interests || prev.interests,
+        name: profileData.result.name || prev.name,
+        birthDate: profileData.result.birthDate || prev.birthDate,
+        gender: profileData.result.gender === 'M' ? '남성' : profileData.result.gender === 'F' ? '여성' : prev.gender,
+        mbti: profileData.result.mbti || prev.mbti,
+        preferredDays: profileData.result.preferredDays || prev.preferredDays,
+        timePreference: profileData.result.preferredTime || prev.timePreference,
+        budget: profileData.result.preferredBudget || prev.budget,
+        transportation: profileData.result.transportation || prev.transportation,
+        transport: profileData.result.transportation || prev.transport,
+        mood: profileData.result.dateMood || prev.mood,
+        relationshipStatus: profileData.result.relationshipStatus || prev.relationshipStatus,
+        dietary: profileData.result.foodTypes || prev.dietary,
+        preferredRegion: profileData.result.preferredRegion || prev.preferredRegion
       }));
     }
-  }, [memberProfileData, profileInterests, profileFoods, profileDays, profileTransportations, profileDateMoods]);
-
-  // API 데이터가 로드되면 프로필 정보 업데이트
-  useEffect(() => {
-    if (detailedProfile) {
-             setProfile(prev => ({
-         ...prev,
-         nickname: detailedProfile.nickname || prev.nickname,
-         interests: detailedProfile.interests || prev.interests,
-        name: detailedProfile.name || prev.name,
-        birthDate: detailedProfile.birthDate || prev.birthDate,
-        gender: detailedProfile.gender || prev.gender,
-        mbti: detailedProfile.mbti || prev.mbti,
-        preferredDays: detailedProfile.preferredDays || prev.preferredDays,
-        timePreference: detailedProfile.preferredTimeSlots?.[0] || prev.timePreference,
-        budget: detailedProfile.preferredBudget || prev.budget,
-        transportation: detailedProfile.transportation || prev.transportation,
-        transport: detailedProfile.transportation || prev.transport,
-        mood: detailedProfile.dateMood || prev.mood,
-        relationshipStatus: detailedProfile.relationshipStatus || prev.relationshipStatus,
-        dietary: detailedProfile.foodPreferences || prev.dietary
-      }));
-    }
-  }, [detailedProfile]);
+  }, [profileData]);
 
   const defaultPartnerProfile = {
     name: "파트너",
