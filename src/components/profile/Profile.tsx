@@ -9,6 +9,17 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Coins, User, Sparkles, Clock, Palette, Utensils, Calendar, Plus, X, Edit, UserX, Settings, Crown } from "lucide-react"
+import { 
+  MBTI, 
+  PreferredTime, 
+  PreferredBudget, 
+  RelationshipStatus, 
+  InterestCategory, 
+  FoodType, 
+  PreferredDays, 
+  Transportation, 
+  DateMood 
+} from "@/types/profile"
 
 interface ProfileProps {
   profile: any
@@ -37,6 +48,81 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
     if (age < 50) return "40대"
     return "50대 이상"
   }
+
+  // 데이터베이스 스키마에 맞춘 옵션들
+  const mbtiOptions: MBTI[] = ['INTJ', 'INTP', 'ENTJ', 'ENTP', 'INFJ', 'INFP', 'ENFJ', 'ENFP', 'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'ISTP', 'ISFP', 'ESTP', 'ESFP']
+  
+  const timeOptions: { value: PreferredTime; label: string }[] = [
+    { value: '아침', label: '🌅 아침' },
+    { value: '낮', label: '☀️ 낮' },
+    { value: '저녁', label: '🌆 저녁' },
+    { value: '밤', label: '🌙 밤' }
+  ]
+  
+  const budgetOptions: PreferredBudget[] = ['3만원 이하', '3-5만원', '5-10만원', '10-20만원', '20만원 이상']
+  
+  const relationshipStatusOptions: { value: RelationshipStatus; label: string }[] = [
+    { value: '커플', label: '❤️ 커플' },
+    { value: '친구', label: '👥 친구' },
+    { value: '가족', label: '👨‍👩‍👧‍👦 가족' }
+  ]
+  
+  const interestOptions: { value: InterestCategory; label: string }[] = [
+    { value: '카페', label: '☕ 카페' },
+    { value: '음악', label: '🎶 음악' },
+    { value: '사진', label: '📷 사진' },
+    { value: '독서', label: '📚 독서' },
+    { value: '게임', label: '🎮 게임' },
+    { value: '맛집', label: '🍽️ 맛집' },
+    { value: '여행', label: '🏞️ 여행' },
+    { value: '영화', label: '🎬 영화' },
+    { value: '운동', label: '🏃 운동' },
+    { value: '예술', label: '🎨 예술' },
+    { value: '요리', label: '🍳 요리' },
+    { value: '캠핑', label: '🏕️ 캠핑' }
+  ]
+  
+  const foodOptions: { value: FoodType; label: string }[] = [
+    { value: '한식', label: '🍚 한식' },
+    { value: '중식', label: '🥢 중식' },
+    { value: '일식', label: '🍣 일식' },
+    { value: '양식', label: '🍝 양식' },
+    { value: '분식', label: '🍜 분식' },
+    { value: '카페', label: '☕ 카페' },
+    { value: '디저트', label: '🍰 디저트' },
+    { value: '술집', label: '🍺 술집' },
+    { value: '치킨', label: '🍗 치킨' },
+    { value: '피자', label: '🍕 피자' },
+    { value: '햄버거', label: '🍔 햄버거' },
+    { value: '샌드위치', label: '🥪 샌드위치' }
+  ]
+  
+  const dayOptions: { value: PreferredDays; label: string }[] = [
+    { value: '월요일', label: '📅 월요일' },
+    { value: '화요일', label: '📅 화요일' },
+    { value: '수요일', label: '📅 수요일' },
+    { value: '목요일', label: '📅 목요일' },
+    { value: '금요일', label: '📅 금요일' },
+    { value: '토요일', label: '📅 토요일' },
+    { value: '일요일', label: '📅 일요일' }
+  ]
+  
+  const transportationOptions: { value: Transportation; label: string }[] = [
+    { value: '대중교통', label: '🚈 대중교통' },
+    { value: '자동차', label: '🚗 자동차' },
+    { value: '도보', label: '�� 도보' },
+    { value: '자전거', label: '🚲 자전거' },
+    { value: '택시', label: '🚕 택시' }
+  ]
+  
+  const moodOptions: { value: DateMood; label: string }[] = [
+    { value: '로맨틱', label: '💕 로맨틱' },
+    { value: '활발한', label: '🎉 활발한' },
+    { value: '차분한', label: '😌 차분한' },
+    { value: '신나는', label: '🎊 신나는' },
+    { value: '액티브', label: '🏃 액티브' },
+    { value: '인스타 감성', label: '📸 인스타 감성' }
+  ]
 
   return (
     <div className="space-y-6">
@@ -84,7 +170,7 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
               </div>
               <div className="space-y-2">
                 <Label>성별</Label>
-                <Select defaultValue="여성">
+                <Select defaultValue={profile.gender}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -102,7 +188,7 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {["INTJ","INTP","ENTJ","ENTP","INFJ","INFP","ENFJ","ENFP","ISTJ","ISFJ","ESTJ","ESFJ","ISTP","ISFP","ESTP","ESFP"].map((type) => (
+                  {mbtiOptions.map((type) => (
                     <SelectItem key={type} value={type}>{type}</SelectItem>
                   ))}
                 </SelectContent>
@@ -120,91 +206,61 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
-              {["☕ 카페", "🎶 음악", "📷 사진", "📚 독서", "🎮 게임", "🍽️ 맛집", "🏞️ 여행", "🎬 영화", "🏃 운동", "🎨 예술", "🍳 요리", "🏕️ 캠핑"].map(
-                (interest) => (
-                  <div key={interest} className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={interest} 
-                      checked={profile.interests.includes(interest)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setProfile({
-                            ...profile,
-                            interests: [...profile.interests, interest],
-                          })
-                        } else {
-                          setProfile({
-                            ...profile,
-                            interests: profile.interests.filter((i: string) => i !== interest),
-                          })
-                        }
-                      }}
-                    />
-                    <Label htmlFor={interest} className="text-sm">
-                      {interest}
-                    </Label>
-                  </div>
-                ),
-              )}
+              {interestOptions.map((interest) => (
+                <div key={interest.value} className="flex items-center space-x-2">
+                  <Checkbox 
+                    id={interest.value} 
+                    checked={profile.interests.includes(interest.value)}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setProfile({
+                          ...profile,
+                          interests: [...profile.interests, interest.value],
+                        })
+                      } else {
+                        setProfile({
+                          ...profile,
+                          interests: profile.interests.filter((i: string) => i !== interest.value),
+                        })
+                      }
+                    }}
+                  />
+                  <Label htmlFor={interest.value} className="text-sm">
+                    {interest.label}
+                  </Label>
+                </div>
+              ))}
             </div>
             <div className="space-y-2">
               <Label>📅 선호하는 데이트 요일</Label>
               <div className="grid grid-cols-2 gap-2">
-                {["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"].map((day) => (
-                  <div key={day} className="flex items-center space-x-2">
+                {dayOptions.map((day) => (
+                  <div key={day.value} className="flex items-center space-x-2">
                     <Checkbox
-                      id={day}
-                      checked={profile.preferredDays.includes(day)}
+                      id={day.value}
+                      checked={profile.preferredDays.includes(day.value)}
                       onCheckedChange={(checked) => {
                         if (checked) {
                           setProfile({
                             ...profile,
-                            preferredDays: [...profile.preferredDays, day],
+                            preferredDays: [...profile.preferredDays, day.value],
                           })
                         } else {
                           setProfile({
                             ...profile,
-                            preferredDays: profile.preferredDays.filter((d: string) => d !== day),
+                            preferredDays: profile.preferredDays.filter((d: string) => d !== day.value),
                           })
                         }
                       }}
                     />
-                    <Label htmlFor={day} className="text-sm">
-                      📅 {day}
+                    <Label htmlFor={day.value} className="text-sm">
+                      {day.label}
                     </Label>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="space-y-2">
-              <Label>📍 선호하는 지역</Label>
-              <div className="grid grid-cols-2 gap-2">
-                {["서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종", "경기도", "강원도", "충청북도", "충청남도", "전라북도", "전라남도", "경상북도", "경상남도", "제주도"].map((location) => (
-                  <div key={location} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={location}
-                      checked={profile.locations.includes(location)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setProfile({
-                            ...profile,
-                            locations: [...profile.locations, location],
-                          })
-                        } else {
-                          setProfile({
-                            ...profile,
-                            locations: profile.locations.filter((l: string) => l !== location),
-                          })
-                        }
-                      }}
-                    />
-                    <Label htmlFor={location} className="text-sm">
-                      📍 {location}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
+
           </CardContent>
         </Card>
         {/* 데이트 선호도 */}
@@ -219,14 +275,14 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
             <div className="space-y-2">
               <Label>선호 시간대</Label>
               <div className="flex gap-2">
-                {["🌅 아침", "☀️ 낮", "🌆 저녁", "🌙 밤"].map((time) => (
+                {timeOptions.map((time) => (
                   <Badge
-                    key={time}
-                    variant={profile.timePreference === time ? "default" : "outline"}
+                    key={time.value}
+                    variant={profile.timePreference === time.value ? "default" : "outline"}
                     className="cursor-pointer"
-                    onClick={() => setProfile({ ...profile, timePreference: time })}
+                    onClick={() => setProfile({ ...profile, timePreference: time.value })}
                   >
-                    {time}
+                    {time.label}
                   </Badge>
                 ))}
               </div>
@@ -234,7 +290,7 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
             <div className="space-y-2">
               <Label>선호하는 데이트 비용</Label>
               <div className="flex gap-2">
-                {["3만원 이하", "3-5만원", "5-10만원", "10-20만원", "20만원 이상"].map((budget) => (
+                {budgetOptions.map((budget) => (
                   <Badge
                     key={budget}
                     variant={profile.budget === budget ? "default" : "outline"}
@@ -249,26 +305,26 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
             <div className="space-y-2">
               <Label>교통수단 (복수 선택 가능)</Label>
               <div className="flex gap-2">
-                {["🚶 도보", "🚗 자차", "🚈 대중교통", "🚲 자전거", "🚕 택시"].map((transport) => (
+                {transportationOptions.map((transport) => (
                   <Badge
-                    key={transport}
-                    variant={profile.transport.includes(transport) ? "default" : "outline"}
+                    key={transport.value}
+                    variant={profile.transport.includes(transport.value) ? "default" : "outline"}
                     className="cursor-pointer"
                     onClick={() => {
-                      if (profile.transport.includes(transport)) {
+                      if (profile.transport.includes(transport.value)) {
                         setProfile({
                           ...profile,
-                          transport: profile.transport.filter((t: string) => t !== transport)
+                          transport: profile.transport.filter((t: string) => t !== transport.value)
                         })
                       } else {
                         setProfile({
                           ...profile,
-                          transport: [...profile.transport, transport]
+                          transport: [...profile.transport, transport.value]
                         })
                       }
                     }}
                   >
-                    {transport}
+                    {transport.label}
                   </Badge>
                 ))}
               </div>
@@ -287,41 +343,41 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
             <div className="space-y-2">
               <Label>데이트 분위기</Label>
               <div className="flex flex-wrap gap-2">
-                {["💕 로맨틱", "🎉 활발한", "😌 차분한", "🎊 신나는", "🏃 액티브", "📸 인스타 감성"].map((mood) => (
+                {moodOptions.map((mood) => (
                   <Badge
-                    key={mood}
-                    variant={profile.mood.includes(mood) ? "default" : "outline"}
+                    key={mood.value}
+                    variant={profile.mood.includes(mood.value) ? "default" : "outline"}
                     className="cursor-pointer"
                     onClick={() => {
-                      if (profile.mood.includes(mood)) {
+                      if (profile.mood.includes(mood.value)) {
                         setProfile({
                           ...profile,
-                          mood: profile.mood.filter((m: string) => m !== mood)
+                          mood: profile.mood.filter((m: string) => m !== mood.value)
                         })
                       } else {
                         setProfile({
                           ...profile,
-                          mood: [...profile.mood, mood]
+                          mood: [...profile.mood, mood.value]
                         })
                       }
                     }}
                   >
-                    {mood}
+                    {mood.label}
                   </Badge>
                 ))}
               </div>
             </div>
             <div className="space-y-2">
-              <Label>현재 연애 상태</Label>
+              <Label>현재 관계 상태</Label>
               <div className="flex gap-2">
-                {["❤️ 연인과", "💛 썸", "👥 친구와"].map((status) => (
+                {relationshipStatusOptions.map((status) => (
                   <Badge
-                    key={status}
-                    variant={profile.relationshipStatus === status ? "default" : "outline"}
+                    key={status.value}
+                    variant={profile.relationshipStatus === status.value ? "default" : "outline"}
                     className="cursor-pointer"
-                    onClick={() => setProfile({ ...profile, relationshipStatus: status })}
+                    onClick={() => setProfile({ ...profile, relationshipStatus: status.value })}
                   >
-                    {status}
+                    {status.label}
                   </Badge>
                 ))}
               </div>
@@ -338,16 +394,30 @@ const Profile: React.FC<ProfileProps> = ({ profile, setProfile, partnerProfile, 
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-3">
-              {["🍚 한식", "🥢 중식", "🍣 일식", "🍝 양식", "🍜 분식", "☕ 카페", "🍰 디저트", "🍺 술집", "🍗 치킨", "🍕 피자", "🍔 햄버거", "🥪 샌드위치"].map(
-                (dietary) => (
-                  <div key={dietary} className="flex items-center space-x-2">
-                    <Checkbox id={dietary} />
-                    <Label htmlFor={dietary} className="text-sm">
-                      {dietary}
-                    </Label>
-                  </div>
-                ),
-              )}
+              {foodOptions.map((food) => (
+                <div key={food.value} className="flex items-center space-x-2">
+                  <Checkbox 
+                    id={food.value} 
+                    checked={profile.dietary?.includes(food.value)}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setProfile({
+                          ...profile,
+                          dietary: [...(profile.dietary || []), food.value],
+                        })
+                      } else {
+                        setProfile({
+                          ...profile,
+                          dietary: (profile.dietary || []).filter((d: string) => d !== food.value),
+                        })
+                      }
+                    }}
+                  />
+                  <Label htmlFor={food.value} className="text-sm">
+                    {food.label}
+                  </Label>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>

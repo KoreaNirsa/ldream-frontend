@@ -25,7 +25,6 @@ const ProfileSetupPage = () => {
     mbti: '',
     interests: [] as string[],
     preferredDays: [] as string[],
-    preferredLocation: '',
     preferredTime: '',
     budgetRange: '',
     transportation: [] as string[],
@@ -68,25 +67,7 @@ const ProfileSetupPage = () => {
     '일요일'
   ];
 
-  const preferredLocations = [
-    '서울',
-    '부산',
-    '대구',
-    '인천',
-    '광주',
-    '대전',
-    '울산',
-    '세종',
-    '경기도',
-    '강원도',
-    '충청북도',
-    '충청남도',
-    '전라북도',
-    '전라남도',
-    '경상북도',
-    '경상남도',
-    '제주도'
-  ];
+
 
   const preferredTimes = [
     '아침',
@@ -397,29 +378,6 @@ const ProfileSetupPage = () => {
                     </button>
                   );
                 })}
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* 선호하는 지역 */}
-            <div className="space-y-4">
-              <Label className="text-lg font-semibold">선호하는 지역</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {preferredLocations.map((location) => (
-                  <button
-                    key={location}
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, preferredLocation: location }))}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      formData.preferredLocation === location
-                        ? 'border-pink-500 bg-pink-50 text-pink-700'
-                        : 'border-gray-200 hover:border-pink-300'
-                    }`}
-                  >
-                    <span className="text-sm font-medium">{location}</span>
-                  </button>
-                ))}
               </div>
             </div>
 

@@ -6,7 +6,18 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Camera, Save, X, Edit, User, Heart, MapPin, Calendar, Bike, Car, Train, Users } from "lucide-react"
+import { Camera, Save, X, Edit, User, Heart, Calendar, Bike, Car, Train, Users } from "lucide-react"
+import { 
+  MBTI, 
+  PreferredTime, 
+  PreferredBudget, 
+  RelationshipStatus, 
+  InterestCategory, 
+  FoodType, 
+  PreferredDays, 
+  Transportation, 
+  DateMood 
+} from "@/types/profile"
 
 interface ProfileEditProps {
   profile: any
@@ -27,11 +38,10 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
     email: profile.email || "",
     phone: profile.phone || "",
     birthday: profile.birthday || "",
-    location: profile.location || "",
     bio: profile.bio || "",
     interests: profile.interests || [],
     avatar: profile.avatar || "",
-    relationshipStatus: profile.relationshipStatus || "연인과",
+    relationshipStatus: profile.relationshipStatus || "",
     anniversary: profile.anniversary || "",
     partnerName: profile.partnerName || "",
     preferredTime: profile.preferredTime || "",
@@ -43,35 +53,32 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
 
   const [newInterest, setNewInterest] = useState("")
 
-  const relationshipOptions = [
-    "연인과", "썸", "친구와"
-  ]
+  // 데이터베이스 스키마에 맞춘 옵션들
+  const relationshipOptions: RelationshipStatus[] = ["커플", "친구", "가족"]
 
-  const interestOptions = [
+  const interestOptions: InterestCategory[] = [
     "카페", "음악", "사진", "독서", "게임", "맛집", "여행", "영화", "운동", "예술", "요리", "캠핑"
   ]
 
-  const preferredTimes = [
-    "아침", "낮", "저녁", "밤"
-  ]
+  const preferredTimes: PreferredTime[] = ["아침", "낮", "저녁", "밤"]
 
-  const budgetRanges = [
+  const budgetRanges: PreferredBudget[] = [
     "3만원 이하", "3-5만원", "5-10만원", "10-20만원", "20만원 이상"
   ]
 
-  const transportations = [
-    { id: 'public', label: '대중교통', icon: Train },
-    { id: 'car', label: '자동차', icon: Car },
-    { id: 'walk', label: '도보', icon: Users },
-    { id: 'bike', label: '자전거', icon: Bike },
-    { id: 'taxi', label: '택시', icon: Car }
+  const transportations: { value: Transportation; label: string; icon: any }[] = [
+    { value: '대중교통', label: '대중교통', icon: Train },
+    { value: '자동차', label: '자동차', icon: Car },
+    { value: '도보', label: '도보', icon: Users },
+    { value: '자전거', label: '자전거', icon: Bike },
+    { value: '택시', label: '택시', icon: Car }
   ]
 
-  const dateMoods = [
+  const dateMoods: DateMood[] = [
     "로맨틱", "활발한", "차분한", "신나는", "액티브", "인스타 감성"
   ]
 
-  const foodPreferences = [
+  const foodPreferences: FoodType[] = [
     "한식", "중식", "일식", "양식", "분식", "카페", "디저트", "술집", "치킨", "피자", "햄버거", "샌드위치"
   ]
 
@@ -99,7 +106,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
     }))
   }
 
-  const handleFoodPreferenceToggle = (food: string) => {
+  const handleFoodPreferenceToggle = (food: FoodType) => {
     setFormData(prev => ({
       ...prev,
       foodPreferences: prev.foodPreferences.includes(food)
@@ -108,7 +115,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
     }))
   }
 
-  const handleTransportationToggle = (transport: string) => {
+  const handleTransportationToggle = (transport: Transportation) => {
     setFormData(prev => ({
       ...prev,
       transportation: prev.transportation.includes(transport)
@@ -207,19 +214,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
                   onChange={(e) => handleInputChange("birthday", e.target.value)}
                 />
               </div>
-              <div>
-                <Label htmlFor="location">거주지</Label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="location"
-                    value={formData.location}
-                    onChange={(e) => handleInputChange("location", e.target.value)}
-                    placeholder="거주지를 입력하세요"
-                    className="pl-10"
-                  />
-                </div>
-              </div>
+
             </div>
           </div>
 
@@ -236,8 +231,8 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
                     placeholder="파트너 이름을 입력하세요"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="relationshipStatus">관계 상태</Label>
+                                 <div>
+                   <Label htmlFor="relationshipStatus">관계 유형</Label>
                   <Select value={formData.relationshipStatus} onValueChange={(value) => handleInputChange("relationshipStatus", value)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -375,12 +370,12 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {transportations.map((transport) => {
                 const Icon = transport.icon;
-                const isSelected = formData.transportation.includes(transport.label);
+                const isSelected = formData.transportation.includes(transport.value);
                 return (
                   <button
-                    key={transport.id}
+                    key={transport.value}
                     type="button"
-                    onClick={() => handleTransportationToggle(transport.label)}
+                    onClick={() => handleTransportationToggle(transport.value)}
                     className={`p-3 rounded-lg border-2 transition-all ${
                       isSelected
                         ? 'border-pink-500 bg-pink-50 text-pink-700'
