@@ -1,5 +1,6 @@
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/store';
+import { RelationRequest, RelationRequestResponse } from '@/types/relation';
 
 // axios 인스턴스 생성
 const axiosInstance = axios.create({
@@ -66,3 +67,37 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
+
+// 관계 요청 API 함수
+export const requestRelation = async (targetEmail: string, relationType: string): Promise<RelationRequestResponse> => {
+  try {
+    const requestData: RelationRequest = {
+      targetEmail,
+      relationType
+    };
+    
+    const response = await axiosInstance.post<RelationRequestResponse>('/api/member/relation/request', requestData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 관계 요청 상태 조회 API 함수
+export const getRelationStatus = async (): Promise<RelationStatus> => {
+  try {
+    const response = await axiosInstance.get<RelationStatus>('/api/member/relation/status');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 관계 요청 취소 API 함수
+export const cancelRelationRequest = async (relationId: number): Promise<void> => {
+  try {
+    await axiosInstance.delete(`/api/member/relation/request/${relationId}`);
+  } catch (error) {
+    throw error;
+  }
+};

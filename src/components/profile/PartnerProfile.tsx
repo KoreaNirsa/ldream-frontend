@@ -9,6 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter } from "@/components/ui/alert-dialog"
 import { Edit, Users, UserPlus, Link, Coins, Sparkles, Heart } from "lucide-react"
+import { requestRelation } from "@/config/axios"
+import { RelationType, RELATION_TYPE_LABELS } from "@/types/relation"
+import { useToast } from "@/hooks/use-toast"
 
 interface PartnerProfileProps {
   partnerProfile: any
@@ -18,16 +21,42 @@ interface PartnerProfileProps {
 
 const PartnerProfile: React.FC<PartnerProfileProps> = ({ partnerProfile, profile, isPartnerConnected }) => {
   const [searchId, setSearchId] = useState("")
-  const [relationshipType, setRelationshipType] = useState("커플")
+  const [relationshipType, setRelationshipType] = useState<RelationType>("COUPLE")
   const [isSearchDialogOpen, setIsSearchDialogOpen] = useState(false)
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const { toast } = useToast()
 
-  const handleConnectionRequest = () => {
-    // 인연 요청 로직 구현
-    setIsSearchDialogOpen(false)
-    setSearchId("")
-    setRelationshipType("커플")
-    setShowSuccessDialog(true)
+  const handleConnectionRequest = async () => {
+    if (!searchId.trim()) return
+    
+    setIsLoading(true)
+    try {
+      // API 호출
+      await requestRelation(searchId, relationshipType)
+      
+             // 성공 시 다이얼로그 닫기 및 상태 초기화
+       setIsSearchDialogOpen(false)
+       setSearchId("")
+       setRelationshipType("COUPLE")
+      
+             // 성공 toast 표시
+       toast({
+         title: "요청 완료",
+         description: `${searchId}님에게 ${RELATION_TYPE_LABELS[relationshipType]} 관계를 요청했습니다.`,
+       })
+      
+      setShowSuccessDialog(true)
+    } catch (error) {
+      console.error('관계 요청 실패:', error)
+      toast({
+        title: "요청 실패",
+        description: "관계 요청에 실패했습니다. 다시 시도해주세요.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   if (!isPartnerConnected) {
@@ -64,32 +93,34 @@ const PartnerProfile: React.FC<PartnerProfileProps> = ({ partnerProfile, profile
                     <div className="space-y-4">
                       <div>
                         <Label htmlFor="relationship-type">관계 유형</Label>
-                        <Select value={relationshipType} onValueChange={setRelationshipType}>
-                          <SelectTrigger className="mt-2">
-                            <SelectValue placeholder="관계 유형을 선택하세요" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="커플">💕 커플</SelectItem>
-                            <SelectItem value="썸">💫 썸</SelectItem>
-                            <SelectItem value="친구">👥 친구</SelectItem>
-                          </SelectContent>
+                                                 <Select value={relationshipType} onValueChange={(value: RelationType) => setRelationshipType(value)}>
+                           <SelectTrigger className="mt-2">
+                             <SelectValue placeholder="관계 유형을 선택하세요">
+                               {RELATION_TYPE_LABELS[relationshipType]}
+                             </SelectValue>
+                           </SelectTrigger>
+                                                     <SelectContent>
+                             <SelectItem value="COUPLE">💕 커플</SelectItem>
+                             <SelectItem value="FRIEND">👥 친구</SelectItem>
+                             <SelectItem value="FAMILY">👨‍👩‍👧‍👦 가족</SelectItem>
+                           </SelectContent>
                         </Select>
                       </div>
                       <div>
-                        <Label htmlFor="search-id">상대방 아이디</Label>
+                        <Label htmlFor="search-id">상대방 이메일</Label>
                         <div className="flex gap-2 mt-2">
                           <Input
                             id="search-id"
-                            placeholder="상대방의 아이디를 입력하세요"
+                            placeholder="상대방의 이메일 입력하세요"
                             value={searchId}
                             onChange={(e) => setSearchId(e.target.value)}
                           />
                           <Button 
                             onClick={handleConnectionRequest}
-                            disabled={!searchId.trim()}
+                            disabled={!searchId.trim() || isLoading}
                             className="bg-pink-500 hover:bg-pink-600"
                           >
-                            요청
+                            {isLoading ? "요청 중..." : "요청"}
                           </Button>
                         </div>
                       </div>
@@ -115,7 +146,10 @@ const PartnerProfile: React.FC<PartnerProfileProps> = ({ partnerProfile, profile
               <AlertDialogDescription className="text-left">
                 <div className="space-y-2">
                   <p className="font-medium text-gray-900">상대방에게 인연을 요청했어요!</p>
-                  <p className="text-sm text-gray-600">활동내역에서 승인/거절이 가능합니다</p>
+                                     <p className="text-sm text-gray-600">
+                     관계 유형: <span className="font-semibold text-pink-600">{RELATION_TYPE_LABELS[relationshipType]}</span>
+                   </p>
+                  <p className="text-sm text-gray-600">상대방이 요청을 수락하면 연결이 완료됩니다</p>
                 </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
