@@ -130,7 +130,7 @@ const Dashboard: React.FC<DashboardProps> = ({ weather, profile, memories, isPar
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-green-700">
               <MapPin className="h-5 w-5" />
-              선호 지역
+              선호 지역 (준비중)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -165,7 +165,7 @@ const Dashboard: React.FC<DashboardProps> = ({ weather, profile, memories, isPar
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-purple-700">
               <Heart className="h-5 w-5" />
-              이번 주 추천
+              이번 주 추천 (준비중)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -181,7 +181,7 @@ const Dashboard: React.FC<DashboardProps> = ({ weather, profile, memories, isPar
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-rose-700">
               <Calendar className="h-5 w-5" />
-              다가오는 기념일
+              다가오는 기념일 (준비중)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -202,7 +202,7 @@ const Dashboard: React.FC<DashboardProps> = ({ weather, profile, memories, isPar
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-amber-700">
               <TrendingUp className="h-5 w-5" />
-              데이트 통계
+              데이트 통계 (준비중)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -223,7 +223,7 @@ const Dashboard: React.FC<DashboardProps> = ({ weather, profile, memories, isPar
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-violet-700">
             <Sparkles className="h-5 w-5" />
-            파트너 연결 상태
+            파트너 연결 상태 (준비중)
           </CardTitle>
           <CardDescription>
             {isPartnerConnected ? "파트너와 연결되어 있어요!" : "파트너와 연결해보세요"}
@@ -272,7 +272,7 @@ const Dashboard: React.FC<DashboardProps> = ({ weather, profile, memories, isPar
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-rose-700">
             <Camera className="h-5 w-5" />
-            최근 추억들 📸
+            최근 추억들 📸 (준비중)
           </CardTitle>
           <CardDescription>
             {isLoggedIn ? "최근에 기록한 소중한 순간들을 다시 만나보세요" : "로그인 해야 이용이 가능해요!"}
@@ -322,7 +322,7 @@ const Dashboard: React.FC<DashboardProps> = ({ weather, profile, memories, isPar
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-orange-700">
             <Gift className="h-5 w-5" />
-            특별 제휴 혜택 🎁
+            특별 제휴 혜택 🎁 (준비중)
           </CardTitle>
           <CardDescription>파트너사와의 특별한 혜택을 놓치지 마세요</CardDescription>
         </CardHeader>
